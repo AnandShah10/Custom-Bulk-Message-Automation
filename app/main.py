@@ -25,7 +25,11 @@ async def home(request: Request):
 async def handle_form(
     message_type: str = Form(...),
     api_key: str = Form(None),
-    message: str = Form(None),
+    text_message: str = Form(None),
+    image_caption: str = Form(None),
+    video_caption: str = Form(None),
+    document_caption: str = Form(None),
+    location_caption: str = Form(None),
     media_url: str = Form(None),
     document_name: str = Form(None),
     latitude: float = Form(None),
@@ -59,27 +63,29 @@ async def handle_form(
                 except KeyError:
                     return txt
 
-            formatted_msg = format_text(message)
-            
             types = [t.strip() for t in message_type.split(',')]
             for t in types:
                 if not t: continue
                 payload = {"to": phone}
                 
                 if t == "text":
-                    payload["text"] = formatted_msg
+                    payload["text"] = format_text(text_message)
                 elif t == "image":
                     payload["imageUrl"] = media_url
-                    if formatted_msg: payload["text"] = formatted_msg
+                    cap = format_text(image_caption)
+                    if cap: payload["text"] = cap
                 elif t == "video":
                     payload["videoUrl"] = media_url
-                    if formatted_msg: payload["text"] = formatted_msg
+                    cap = format_text(video_caption)
+                    if cap: payload["text"] = cap
                 elif t == "document":
                     payload["documentUrl"] = media_url
                     payload["fileName"] = document_name or "Document"
-                    if formatted_msg: payload["text"] = formatted_msg
+                    cap = format_text(document_caption)
+                    if cap: payload["text"] = cap
                 elif t == "location":
-                    if formatted_msg: payload["text"] = formatted_msg
+                    cap = format_text(location_caption)
+                    if cap: payload["text"] = cap
                     payload["location"] = {
                         "latitude": latitude,
                         "longitude": longitude,

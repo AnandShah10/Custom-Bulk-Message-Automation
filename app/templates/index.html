@@ -29,13 +29,13 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="container mx-auto py-12 px-4 relative z-10 flex flex-col lg:flex-row gap-8 items-start">
+    <main class="container mx-auto py-12 px-4 relative z-10 flex flex-col lg:flex-row gap-6 items-start">
         
-        <!-- Sidebar / Message Type Selector -->
-        <div class="w-full lg:w-1/4 glass-panel rounded-2xl p-6 shadow-2xl border border-white/10">
+        <!-- Sidebar / Message Type Selector (Left) -->
+        <div class="w-full lg:w-1/4 xl:w-1/5 glass-panel rounded-2xl p-6 shadow-2xl border border-white/10 shrink-0">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 ml-2">Message Type</h3>
             <div class="space-y-2 flex flex-col" id="typeSelectors">
-                <button type="button" data-type="text" class="type-btn active">📝 Text Message</button>
+                <button type="button" data-type="text" class="type-btn">📝 Text Message</button>
                 <button type="button" data-type="image" class="type-btn">🖼️ Image</button>
                 <button type="button" data-type="video" class="type-btn">🎥 Video</button>
                 <button type="button" data-type="document" class="type-btn">📄 Document</button>
@@ -44,8 +44,8 @@
             </div>
         </div>
 
-        <!-- Form Area -->
-        <div class="w-full lg:w-3/4 glass-panel rounded-3xl p-8 xl:p-12 shadow-2xl border border-white/10 form-container transition-all duration-500">
+        <!-- Form Area (Center) -->
+        <div class="w-full lg:w-2/4 xl:w-3/5 glass-panel rounded-3xl p-8 shadow-2xl border border-white/10 form-container transition-all duration-500">
             <div class="mb-8 hidden" id="successBanner">
                 <div class="glass-success border border-green-500/30 text-green-300 p-4 rounded-xl flex items-center gap-3">
                     <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
@@ -68,8 +68,16 @@
                 <!-- API Key (Always visible) -->
                 <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2">WASender API Key</label>
-                    <input type="password" name="api_key" placeholder="Leave empty to use default .env key"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
+                    <div class="relative">
+                        <input type="password" id="apiKeyInput" name="api_key" placeholder="Leave empty to use default .env key"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all pr-12">
+                        <button type="button" id="toggleApiKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1">
+                            <!-- Eye Icon Closed (Default for Password) -->
+                            <svg id="eyeClosed" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                            <!-- Eye Icon Open (Hidden by Default) -->
+                            <svg id="eyeOpen" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Excel Upload (Always visible) -->
@@ -140,14 +148,35 @@
                     </div>
                 </div>
 
-                <!-- Message/Caption (For all except Contact) -->
-                <div class="input-group dynamic-field" data-shows="text,image,video,document,location">
-                    <label class="block text-sm font-medium text-gray-300 mb-2" id="msgLabel">Message Content / Caption</label>
-                    <textarea name="message" rows="5" placeholder="Hello {Name}, how are you today?"
+                <!-- Message/Caption Fields (Isolated by Type) -->
+                <div class="input-group dynamic-field hidden" data-shows="text">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Text Content <span class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports variables {Name}</span></label>
+                    <textarea name="text_message" rows="4" placeholder="Hello {Name}, how are you today?"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                    <div class="mt-2 flex items-center justify-between">
-                        <p class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded inline-block">💡 Supports variables like {Name}, {Company}</p>
-                    </div>
+                </div>
+                
+                <div class="input-group dynamic-field hidden" data-shows="image">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Image Caption</label>
+                    <textarea name="image_caption" rows="2" placeholder="Look at this amazing image, {Name}!"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                </div>
+
+                <div class="input-group dynamic-field hidden" data-shows="video">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Video Caption</label>
+                    <textarea name="video_caption" rows="2" placeholder="Watch this new video!"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                </div>
+
+                <div class="input-group dynamic-field hidden" data-shows="document">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Document Caption</label>
+                    <textarea name="document_caption" rows="2" placeholder="Attached is your requested document."
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                </div>
+
+                <div class="input-group dynamic-field hidden" data-shows="location">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Location Caption / Note</label>
+                    <textarea name="location_caption" rows="2" placeholder="Here is our headquarters."
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                 </div>
 
                 <!-- Submit Button -->
@@ -162,6 +191,29 @@
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- Live Preview Panel (Right) -->
+        <div class="w-full lg:w-1/4 xl:w-1/5 shrink-0 sticky top-24">
+            <div class="glass-panel shadow-2xl border border-white/10 rounded-3xl overflow-hidden flex flex-col h-[600px]">
+                <!-- WA Header -->
+                <div class="bg-[#202c33] px-4 py-3 flex items-center gap-3 border-b border-white/5">
+                    <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden">
+                        <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                    </div>
+                    <div>
+                        <div class="text-[#e9edef] font-medium text-base leading-tight">Client Preview</div>
+                        <div class="text-[#8696a0] text-xs">online</div>
+                    </div>
+                </div>
+                
+                <!-- Chat Area -->
+                <div class="chat-bg flex-1 p-4 overflow-y-auto flex flex-col gap-1" id="chatPreviewArea">
+                    <div class="text-center my-4">
+                        <span class="bg-[#182229] text-[#8696a0] text-xs px-3 py-1 rounded-lg">Select a message type to preview</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -178,6 +230,40 @@
         const errorBanner = document.getElementById('errorBanner');
         const successCount = document.getElementById('successCount');
         const errorText = document.getElementById('errorText');
+        const chatPreviewArea = document.getElementById('chatPreviewArea');
+
+        // Eye Toggle Logic
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const toggleApiKey = document.getElementById('toggleApiKey');
+        const eyeClosed = document.getElementById('eyeClosed');
+        const eyeOpen = document.getElementById('eyeOpen');
+
+        toggleApiKey.addEventListener('click', () => {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                eyeClosed.classList.add('hidden');
+                eyeOpen.classList.remove('hidden');
+            } else {
+                apiKeyInput.type = 'password';
+                eyeClosed.classList.remove('hidden');
+                eyeOpen.classList.add('hidden');
+            }
+        });
+
+        // Form Inputs for Preview
+        const msgText = document.querySelector('textarea[name="text_message"]');
+        const imgCap = document.querySelector('textarea[name="image_caption"]');
+        const vidCap = document.querySelector('textarea[name="video_caption"]');
+        const docCap = document.querySelector('textarea[name="document_caption"]');
+        const locCap = document.querySelector('textarea[name="location_caption"]');
+
+        const docName = document.querySelector('input[name="document_name"]');
+        const locName = document.querySelector('input[name="location_name"]');
+        const locAddress = document.querySelector('input[name="location_address"]');
+        const conName = document.querySelector('input[name="contact_name"]');
+        const conPhone = document.querySelector('input[name="contact_phone"]');
+
+        let selectedSequence = []; // Tracks ordered intent
 
         // File upload UI
         fileInput.addEventListener('change', (e) => {
@@ -188,54 +274,152 @@
             }
         });
 
-        // Tab Switching / Multi-Select Logic
+        // Toggle array logic
         btnSelectors.forEach(btn => {
             btn.addEventListener('click', () => {
-                // Toggle active state for multi-select
-                btn.classList.toggle('active');
+                const type = btn.dataset.type;
                 
-                // Collect ALL active types
-                const activeTypes = Array.from(btnSelectors)
-                                        .filter(b => b.classList.contains('active'))
-                                        .map(b => b.dataset.type);
-                
-                // Enforce at least one selection
-                if(activeTypes.length === 0) {
+                if (selectedSequence.includes(type)) {
+                    // Deselect
+                    selectedSequence = selectedSequence.filter(t => t !== type);
+                    btn.classList.remove('active');
+                    const badge = btn.querySelector('.sequence-badge');
+                    if(badge) badge.remove();
+                } else {
+                    // Select
+                    selectedSequence.push(type);
                     btn.classList.add('active');
-                    return; 
                 }
 
-                hiddenMsgType.value = activeTypes.join(',');
+                // Update visual numbers
+                document.querySelectorAll('.sequence-badge').forEach(b => b.remove());
+                selectedSequence.forEach((t, i) => {
+                    const activeBtn = document.querySelector(`[data-type="${t}"]`);
+                    activeBtn.insertAdjacentHTML('beforeend', `<span class="sequence-badge">${i + 1}</span>`);
+                });
 
-                // Form Animation wrapper
+                // Form behavior
+                if(selectedSequence.length === 0) {
+                    // Default fallback visual if completely empty
+                    hiddenMsgType.value = "";
+                } else {
+                    hiddenMsgType.value = selectedSequence.join(',');
+                }
+
                 const formContainer = document.querySelector('.form-container');
                 formContainer.style.opacity = '0.5';
-                formContainer.style.transform = 'scale(0.99)';
-
+                
                 setTimeout(() => {
-                    // Show Fields if required by ANY of the active types
                     dynamicFields.forEach(field => {
                         const showsFor = field.dataset.shows.split(',');
-                        const shouldShow = activeTypes.some(type => showsFor.includes(type));
+                        const shouldShow = selectedSequence.some(t => showsFor.includes(t));
                         if(shouldShow) {
                             field.classList.remove('hidden');
-                            field.style.opacity = '1';
-                            field.style.transform = 'translateY(0)';
                         } else {
                             field.classList.add('hidden');
                         }
                     });
-                    
                     formContainer.style.opacity = '1';
-                    formContainer.style.transform = 'scale(1)';
-                }, 200);
+                }, 150);
+
+                updatePreview();
             });
         });
+
+        // Live Preview Renderer
+        function updatePreview() {
+            chatPreviewArea.innerHTML = '';
+            
+            if (selectedSequence.length === 0) {
+                chatPreviewArea.innerHTML = '<div class="text-center my-4"><span class="bg-[#182229] text-[#8696a0] text-xs px-3 py-1 rounded-lg">Select a message type to preview</span></div>';
+                return;
+            }
+
+            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            // Render bubbles exactly in order of array
+            selectedSequence.forEach(type => {
+                let contentHTML = '';
+                
+                if (type === 'text') {
+                    const baseText = msgText.value.trim() || 'Text message content...';
+                    contentHTML = `<span>${baseText.replace(/\\n/g, '<br>')}</span>`;
+                } 
+                else if (type === 'image') {
+                    const baseText = imgCap.value.trim();
+                    contentHTML = `<div class="media-placeholder border border-white/10 overflow-hidden"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300&h=150&fit=crop" class="w-full h-full object-cover opacity-60"></div>`;
+                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                }
+                else if (type === 'video') {
+                    const baseText = vidCap.value.trim();
+                    contentHTML = `<div class="media-placeholder">▶️</div>`;
+                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                }
+                else if (type === 'document') {
+                    const baseText = docCap.value.trim();
+                    const docTitle = docName.value.trim() || 'Document.pdf';
+                    contentHTML = `
+                        <div class="bg-black/20 p-3 rounded flex items-center gap-3 mb-1">
+                            <div class="text-red-400 text-2xl">📄</div>
+                            <div class="flex-1 truncate font-medium">${docTitle}</div>
+                        </div>`;
+                    if(baseText) contentHTML += `<div>${baseText.replace(/\\n/g, '<br>')}</div>`;
+                }
+                else if (type === 'location') {
+                    const baseText = locCap.value.trim();
+                    const lName = locName.value.trim() || 'Pinned Location';
+                    const lAddr = locAddress.value.trim() || '';
+                    contentHTML = `<div class="media-placeholder map-bg flex flex-col items-center justify-center p-2 text-center relative overflow-hidden">
+                        <div class="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=1&size=400x400')] opacity-30 bg-cover bg-center"></div>
+                        <div class="text-red-500 text-3xl drop-shadow-lg z-10">📍</div>
+                        <div class="font-bold text-sm z-10 mt-1">${lName}</div>
+                        <div class="text-xs opacity-70 truncate w-full z-10">${lAddr}</div>
+                    </div>`;
+                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                }
+                else if (type === 'contact') {
+                    const cName = conName.value.trim() || 'Contact Name';
+                    contentHTML = `
+                        <div class="border-b border-white/10 pb-2 mb-2 flex items-center gap-3">
+                            <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
+                            <div class="font-medium">${cName}</div>
+                        </div>
+                        <div class="text-blue-300 text-sm text-center font-medium">Message</div>
+                    `;
+                }
+
+                const bubble = `
+                <div class="bubble-out animate-[popIn_0.2s_ease-out]">
+                    ${contentHTML}
+                    <span class="bubble-meta">${timeStr} <svg viewBox="0 0 16 15" width="16" height="15" class="inline opacity-80" fill="currentColor"><path d="m15.01 3.316-.473-.467a.422.422 0 0 0-.608 0l-6.39 6.338L4.053 5.672a.422.422 0 0 0-.61 0l-.472.467a.434.434 0 0 0 0 .614l3.96 3.921a.422.422 0 0 0 .609 0l7.47-7.358a.436.436 0 0 0 0-.6zm-4.321-.467-.472-.467a.422.422 0 0 0-.61 0l-3.23 3.19-1.278-1.266a.422.422 0 0 0-.61 0l-.47.467a.434.434 0 0 0 0 .614l1.583 1.567.874.864a.422.422 0 0 0 .608 0l3.605-3.555a.436.436 0 0 0 0-.6z"></path></svg></span>
+                </div>`;
+                chatPreviewArea.insertAdjacentHTML('beforeend', bubble);
+            });
+            
+            // Auto scroll preview to bottom
+            chatPreviewArea.scrollTop = chatPreviewArea.scrollHeight;
+        }
+
+        // Bind form inputs to update preview
+        [msgText, imgCap, vidCap, docCap, locCap, docName, locName, locAddress, conName, conPhone].forEach(input => {
+            if(input) {
+                input.addEventListener('keyup', updatePreview);
+                input.addEventListener('change', updatePreview);
+            }
+        });
+
+        // Default click a text message on load
+        document.querySelector('[data-type="text"]').click();
 
         // AJAX Form Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
+            if(selectedSequence.length === 0) {
+                alert("Please select at least one message type.");
+                return;
+            }
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</span>';
             
@@ -259,6 +443,8 @@
                     fileDisplay.classList.remove('text-blue-400');
                     fileDisplay.classList.add('text-gray-400');
                     // Reset to text view
+                    selectedSequence = [];
+                    document.querySelectorAll('.type-btn.active').forEach(b => b.classList.remove('active'));
                     document.querySelector('[data-type="text"]').click();
                 } else {
                     errorText.textContent = result.error || result.detail || 'An unknown error occurred';
