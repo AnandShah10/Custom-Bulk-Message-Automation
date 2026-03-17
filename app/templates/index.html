@@ -1,36 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WASender Pro | Dashboard</title>
+    <title>CBMS Pro | Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
     <!-- Ambient Background -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/30 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]">
+        </div>
     </div>
 
     <!-- Navigation -->
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
                 </div>
-                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WASender Pro</span>
+                <span
+                    class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS
+                    Pro</span>
             </div>
-            <div class="text-sm text-gray-400 font-medium">Enterprise Edition</div>
+            <div class="flex items-center gap-4">
+                {% if user.role == 'admin' %}
+                    <a href="/admin" class="bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-red-500/30">Admin Panel</a>
+                {% endif %}
+                
+                <div class="relative group cursor-pointer border border-white/10 bg-white/5 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors">
+                    <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-xs font-bold">{{ user.username[0]|upper }}</div>
+                        <span class="text-sm font-medium">{{ user.username }}</span>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    
+                    <!-- Dropdown -->
+                    <div class="absolute right-0 mt-2 w-48 bg-[#121c32] rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100">
+                        <a href="/profile" class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security Settings</a>
+                        <form action="/auth/logout" method="POST" class="block w-full text-left">
+                            <button type="submit" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sign Out</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="container mx-auto py-12 px-4 relative z-10 flex flex-col lg:flex-row gap-6 items-start">
-        
+
         <!-- Sidebar / Message Type Selector (Left) -->
         <div class="w-full lg:w-1/4 xl:w-1/5 glass-panel rounded-2xl p-6 shadow-2xl border border-white/10 shrink-0">
             <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 ml-2">Message Type</h3>
@@ -45,22 +74,32 @@
         </div>
 
         <!-- Form Area (Center) -->
-        <div class="w-full lg:w-2/4 xl:w-3/5 glass-panel rounded-3xl p-8 shadow-2xl border border-white/10 form-container transition-all duration-500">
+        <div
+            class="w-full lg:w-2/4 xl:w-3/5 glass-panel rounded-3xl p-8 shadow-2xl border border-white/10 form-container transition-all duration-500">
             <div class="mb-8 hidden" id="successBanner">
-                <div class="glass-success border border-green-500/30 text-green-300 p-4 rounded-xl flex items-center gap-3">
-                    <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    <div><strong class="block text-green-300 font-semibold" id="successCount">Campaign Launched!</strong><span class="text-sm text-green-400/80">Messages are queued and processing in the background.</span></div>
+                <div
+                    class="glass-success border border-green-500/30 text-green-300 p-4 rounded-xl flex items-center gap-3">
+                    <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <div><strong class="block text-green-300 font-semibold" id="successCount">Campaign
+                            Launched!</strong><span class="text-sm text-green-400/80">Messages are queued and processing
+                            in the background.</span></div>
                 </div>
             </div>
             <div class="mb-8 hidden" id="errorBanner">
                 <div class="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-xl flex items-center gap-3">
-                    <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     <span id="errorText">An error occurred.</span>
                 </div>
             </div>
 
             <h2 class="text-3xl font-bold mb-2 text-white">Campaign Details</h2>
-            <p class="text-gray-400 mb-8 border-b border-white/10 pb-6">Configure your broadcast settings and upload recipients.</p>
+            <p class="text-gray-400 mb-8 border-b border-white/10 pb-6">Configure your broadcast settings and upload
+                recipients.</p>
 
             <form id="campaignForm" class="space-y-8">
                 <input type="hidden" name="message_type" id="hiddenMessageType" value="text" />
@@ -69,35 +108,56 @@
                 <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2">WASender API Key</label>
                     <div class="relative">
-                        <input type="password" id="apiKeyInput" name="api_key" placeholder="Leave empty to use default .env key"
+                        <input type="password" id="apiKeyInput" name="api_key"
+                            placeholder="Leave empty to use default .env key"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all pr-12">
-                        <button type="button" id="toggleApiKey" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1">
+                        <button type="button" id="toggleApiKey"
+                            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1">
                             <!-- Eye Icon Closed (Default for Password) -->
-                            <svg id="eyeClosed" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" /></svg>
+                            <svg id="eyeClosed" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                            </svg>
                             <!-- Eye Icon Open (Hidden by Default) -->
-                            <svg id="eyeOpen" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                            <svg id="eyeOpen" class="w-5 h-5 hidden" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
                         </button>
                     </div>
                 </div>
 
                 <!-- Excel Upload (Always visible) -->
                 <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Recipients List (.xlsx) <span class="text-red-400">*</span></label>
-                    <div class="relative group cursor-pointer border-2 border-dashed border-white/20 rounded-2xl p-8 hover:border-blue-500/50 hover:bg-white/[0.02] transition-all text-center file-drop-area">
-                        <input type="file" name="excel_file" id="excelFile" accept=".xlsx, .xls" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Recipients List (.xlsx) <span
+                            class="text-red-400">*</span></label>
+                    <div
+                        class="relative group cursor-pointer border-2 border-dashed border-white/20 rounded-2xl p-8 hover:border-blue-500/50 hover:bg-white/[0.02] transition-all text-center file-drop-area">
+                        <input type="file" name="excel_file" id="excelFile" accept=".xlsx, .xls" required
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
                         <div class="flex flex-col items-center justify-center pointer-events-none">
-                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            <div
+                                class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
                             </div>
                             <h4 class="text-white font-medium mb-1">Upload Excel File</h4>
-                            <p class="text-sm text-gray-400" id="fileNameDisplay">Drag and drop or click to browse (Must contain 'Phone' column)</p>
+                            <p class="text-sm text-gray-400" id="fileNameDisplay">Drag and drop or click to browse (Must
+                                contain 'Phone' column)</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Media URL (For Image, Video, Document) -->
                 <div class="input-group dynamic-field hidden" data-shows="image,video,document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2" id="mediaUrlLabel">Media / Document URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2" id="mediaUrlLabel">Media / Document
+                        URL</label>
                     <input type="url" name="media_url" placeholder="https://example.com/file.jpg"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     <p class="text-xs text-gray-500 mt-2">Required if Image, Video, or Document is selected.</p>
@@ -150,11 +210,13 @@
 
                 <!-- Message/Caption Fields (Isolated by Type) -->
                 <div class="input-group dynamic-field hidden" data-shows="text">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Text Content <span class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports variables {Name}</span></label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Text Content <span
+                            class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports
+                            variables {Name}</span></label>
                     <textarea name="text_message" rows="4" placeholder="Hello {Name}, how are you today?"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                 </div>
-                
+
                 <div class="input-group dynamic-field hidden" data-shows="image">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Image Caption</label>
                     <textarea name="image_caption" rows="2" placeholder="Look at this amazing image, {Name}!"
@@ -185,9 +247,15 @@
                         class="relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_60px_-15px_rgba(59,130,246,0.7)] hover:scale-[1.01] transition-all duration-300 group">
                         <span class="relative z-10 flex items-center justify-center gap-2">
                             <span>Launch Broadcast</span>
-                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none"
+                                viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                            </svg>
                         </span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        </div>
                     </button>
                 </div>
             </form>
@@ -195,22 +263,27 @@
 
         <!-- Live Preview Panel (Right) -->
         <div class="w-full lg:w-1/4 xl:w-1/5 shrink-0 sticky top-24">
-            <div class="glass-panel shadow-2xl border border-white/10 rounded-3xl overflow-hidden flex flex-col h-[600px]">
+            <div
+                class="glass-panel shadow-2xl border border-white/10 rounded-3xl overflow-hidden flex flex-col h-[600px]">
                 <!-- WA Header -->
                 <div class="bg-[#202c33] px-4 py-3 flex items-center gap-3 border-b border-white/5">
                     <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center overflow-hidden">
-                        <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        <svg class="w-6 h-6 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
                     </div>
                     <div>
                         <div class="text-[#e9edef] font-medium text-base leading-tight">Client Preview</div>
                         <div class="text-[#8696a0] text-xs">online</div>
                     </div>
                 </div>
-                
+
                 <!-- Chat Area -->
                 <div class="chat-bg flex-1 p-4 overflow-y-auto flex flex-col gap-1" id="chatPreviewArea">
                     <div class="text-center my-4">
-                        <span class="bg-[#182229] text-[#8696a0] text-xs px-3 py-1 rounded-lg">Select a message type to preview</span>
+                        <span class="bg-[#182229] text-[#8696a0] text-xs px-3 py-1 rounded-lg">Select a message type to
+                            preview</span>
                     </div>
                 </div>
             </div>
@@ -267,7 +340,7 @@
 
         // File upload UI
         fileInput.addEventListener('change', (e) => {
-            if(e.target.files.length > 0) {
+            if (e.target.files.length > 0) {
                 fileDisplay.textContent = e.target.files[0].name;
                 fileDisplay.classList.add('text-blue-400');
                 fileDisplay.classList.remove('text-gray-400');
@@ -278,13 +351,13 @@
         btnSelectors.forEach(btn => {
             btn.addEventListener('click', () => {
                 const type = btn.dataset.type;
-                
+
                 if (selectedSequence.includes(type)) {
                     // Deselect
                     selectedSequence = selectedSequence.filter(t => t !== type);
                     btn.classList.remove('active');
                     const badge = btn.querySelector('.sequence-badge');
-                    if(badge) badge.remove();
+                    if (badge) badge.remove();
                 } else {
                     // Select
                     selectedSequence.push(type);
@@ -299,7 +372,7 @@
                 });
 
                 // Form behavior
-                if(selectedSequence.length === 0) {
+                if (selectedSequence.length === 0) {
                     // Default fallback visual if completely empty
                     hiddenMsgType.value = "";
                 } else {
@@ -308,12 +381,12 @@
 
                 const formContainer = document.querySelector('.form-container');
                 formContainer.style.opacity = '0.5';
-                
+
                 setTimeout(() => {
                     dynamicFields.forEach(field => {
                         const showsFor = field.dataset.shows.split(',');
                         const shouldShow = selectedSequence.some(t => showsFor.includes(t));
-                        if(shouldShow) {
+                        if (shouldShow) {
                             field.classList.remove('hidden');
                         } else {
                             field.classList.add('hidden');
@@ -329,31 +402,31 @@
         // Live Preview Renderer
         function updatePreview() {
             chatPreviewArea.innerHTML = '';
-            
+
             if (selectedSequence.length === 0) {
                 chatPreviewArea.innerHTML = '<div class="text-center my-4"><span class="bg-[#182229] text-[#8696a0] text-xs px-3 py-1 rounded-lg">Select a message type to preview</span></div>';
                 return;
             }
 
-            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
             // Render bubbles exactly in order of array
             selectedSequence.forEach(type => {
                 let contentHTML = '';
-                
+
                 if (type === 'text') {
                     const baseText = msgText.value.trim() || 'Text message content...';
                     contentHTML = `<span>${baseText.replace(/\\n/g, '<br>')}</span>`;
-                } 
+                }
                 else if (type === 'image') {
                     const baseText = imgCap.value.trim();
                     contentHTML = `<div class="media-placeholder border border-white/10 overflow-hidden"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300&h=150&fit=crop" class="w-full h-full object-cover opacity-60"></div>`;
-                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'video') {
                     const baseText = vidCap.value.trim();
                     contentHTML = `<div class="media-placeholder">▶️</div>`;
-                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'document') {
                     const baseText = docCap.value.trim();
@@ -363,7 +436,7 @@
                             <div class="text-red-400 text-2xl">📄</div>
                             <div class="flex-1 truncate font-medium">${docTitle}</div>
                         </div>`;
-                    if(baseText) contentHTML += `<div>${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    if (baseText) contentHTML += `<div>${baseText.replace(/\\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'location') {
                     const baseText = locCap.value.trim();
@@ -375,7 +448,7 @@
                         <div class="font-bold text-sm z-10 mt-1">${lName}</div>
                         <div class="text-xs opacity-70 truncate w-full z-10">${lAddr}</div>
                     </div>`;
-                    if(baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'contact') {
                     const cName = conName.value.trim() || 'Contact Name';
@@ -395,14 +468,14 @@
                 </div>`;
                 chatPreviewArea.insertAdjacentHTML('beforeend', bubble);
             });
-            
+
             // Auto scroll preview to bottom
             chatPreviewArea.scrollTop = chatPreviewArea.scrollHeight;
         }
 
         // Bind form inputs to update preview
         [msgText, imgCap, vidCap, docCap, locCap, docName, locName, locAddress, conName, conPhone].forEach(input => {
-            if(input) {
+            if (input) {
                 input.addEventListener('keyup', updatePreview);
                 input.addEventListener('change', updatePreview);
             }
@@ -414,15 +487,15 @@
         // AJAX Form Submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
-            if(selectedSequence.length === 0) {
+
+            if (selectedSequence.length === 0) {
                 alert("Please select at least one message type.");
                 return;
             }
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</span>';
-            
+
             successBanner.classList.add('hidden');
             errorBanner.classList.add('hidden');
 
@@ -435,7 +508,7 @@
                 });
                 const result = await response.json();
 
-                if(response.ok) {
+                if (response.ok) {
                     successCount.textContent = `🚀 Campaign Launched! (${result.messages_queued} queued)`;
                     successBanner.classList.remove('hidden');
                     form.reset();
@@ -466,4 +539,5 @@
         });
     </script>
 </body>
+
 </html>

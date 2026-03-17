@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBMS Pro | Profile & Security</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/30 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/dashboard" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">← Back to App</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 max-w-4xl relative z-10 flex flex-col md:flex-row gap-8 items-start">
+        
+        <!-- Sidebar Menu -->
+        <div class="w-full md:w-1/4 glass-panel rounded-2xl p-4 shadow-xl border border-white/10">
+            <nav class="space-y-1">
+                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium">👤 Profile</button>
+                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 transition-colors">🔐 Security</button>
+                <form action="/auth/logout" method="POST" class="w-full mt-4">
+                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 transition-colors">⬅️ Logout</button>
+                </form>
+            </nav>
+        </div>
+
+        <!-- Main Content (Security Page Defaults) -->
+        <div class="w-full md:w-3/4 space-y-8">
+            <h2 class="text-3xl font-bold mb-2">Account Security</h2>
+            
+            <!-- Change Password -->
+            <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                <h3 class="text-xl font-bold mb-4">Update Password</h3>
+                <form id="passwordForm" class="space-y-4">
+                    <div id="pwNotice" class="hidden text-sm p-3 rounded bg-blue-500/10 text-blue-400 mb-4"></div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">Current Password</label>
+                        <input type="password" name="current_password" required
+                            class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-400 mb-1">New Password</label>
+                        <input type="password" name="new_password" required minlength="8"
+                            class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white">
+                    </div>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg transition-colors mt-2">
+                        Save Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Two-Factor Authentication -->
+            <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xl font-bold">Two-Factor Authentication (MFA)</h3>
+                        <p class="text-sm text-gray-400 mt-1" id="mfaStatusText">Checking MFA status...</p>
+                    </div>
+                    <div id="mfaBadge" class="hidden px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></div>
+                </div>
+
+                <!-- MFA Setup Action Area -->
+                <div id="mfaSetupBox" class="hidden border border-white/5 bg-black/20 p-6 rounded-2xl">
+                    <p class="mb-4 text-sm text-gray-300">Scan this QR code using Google Authenticator, Authy, or Microsoft Authenticator.</p>
+                    <div class="flex justify-center mb-6">
+                        <img id="qrCodeImg" class="rounded-xl border-4 border-white shadow-2xl w-48 h-48" style="image-rendering: pixelated;"/>
+                    </div>
+                    <form id="mfaEnableForm" class="max-w-xs mx-auto space-y-3">
+                        <input type="text" name="mfa_code" placeholder="6-digit code" required autocomplete="off"
+                            class="custom-input w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white text-center font-mono text-xl tracking-widest">
+                        <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-500/20">
+                            Verify & Enable MFA
+                        </button>
+                        <p id="mfaError" class="text-red-400 text-xs text-center hidden"></p>
+                    </form>
+                </div>
+                
+                <div id="mfaActionButtons" class="mt-4">
+                    <button id="btnSetupMfa" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg transition-colors hidden">
+                        Set up MFA Now
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check Profile Status
+            try {
+                const res = await fetch('/users/me');
+                if(res.ok) {
+                    const user = await res.json();
+                    
+                    if(user.mfa_enabled) {
+                        document.getElementById('mfaStatusText').textContent = "Your account is highly secure.";
+                        const badge = document.getElementById('mfaBadge');
+                        badge.textContent = "Enabled";
+                        badge.classList.add('bg-green-500/20', 'text-green-400');
+                        badge.classList.remove('hidden');
+                    } else {
+                        document.getElementById('mfaStatusText').textContent = "Add an extra layer of security to your account.";
+                        const badge = document.getElementById('mfaBadge');
+                        badge.textContent = "Disabled";
+                        badge.classList.add('bg-red-500/20', 'text-red-400');
+                        badge.classList.remove('hidden');
+                        document.getElementById('btnSetupMfa').classList.remove('hidden');
+                    }
+                }
+            } catch(e) {}
+        });
+
+        // Setup MFA Flow
+        document.getElementById('btnSetupMfa').addEventListener('click', async (e) => {
+            e.target.disabled = true;
+            try {
+                const res = await fetch('/mfa/setup');
+                const data = await res.json();
+                if(res.ok) {
+                    document.getElementById('qrCodeImg').src = "data:image/png;base64," + data.qr_code_base64;
+                    document.getElementById('mfaSetupBox').classList.remove('hidden');
+                    e.target.classList.add('hidden');
+                }
+            } catch (err) {}
+        });
+
+        // Enable MFA Verification
+        document.getElementById('mfaEnableForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const err = document.getElementById('mfaError');
+            err.classList.add('hidden');
+            btn.textContent = "Verifying...";
+            
+            const formData = new FormData(e.target);
+            try {
+                const res = await fetch('/mfa/enable', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(res.ok) {
+                    window.location.reload(); // Hard reload to show enabled status
+                } else {
+                    err.textContent = data.detail || "Invalid code.";
+                    err.classList.remove('hidden');
+                    btn.textContent = "Verify & Enable MFA";
+                }
+            } catch (e) {}
+        });
+
+        // Password Update Flow
+        document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const notice = document.getElementById('pwNotice');
+             const formData = new FormData(e.target);
+             
+             try {
+                const res = await fetch('/users/me/password', { method: 'POST', body: formData });
+                const result = await res.json();
+                
+                notice.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'bg-green-500/10', 'text-green-400');
+                if(res.ok) {
+                    notice.classList.add('bg-green-500/10', 'text-green-400');
+                    notice.textContent = "Password updated securely.";
+                    e.target.reset();
+                } else {
+                    notice.classList.add('bg-red-500/10', 'text-red-400');
+                    notice.textContent = result.detail || "Failed to update password.";
+                }
+             } catch (err) {}
+        });
+    </script>
+</body>
+</html>

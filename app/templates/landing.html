@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBMS Pro | Landing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/30 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/login" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Sign In</a>
+                <a href="/signup" class="text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-2 rounded-lg transition-colors">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <main class="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-medium mb-8 animate-[popIn_0.5s_ease-out]">
+            <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
+            v2.0 Enterprise Release
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight max-w-4xl">
+            Scale your reach with <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400">Intelligent Broadcasting</span>
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-400 max-w-2xl mb-12">
+            The ultimate customized bulk messaging system. Engage your audience with personalized text, media, documents, and locations at scale.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
+            <a href="/signup" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-105 hover:shadow-blue-500/50 flex-1">
+                Start Free Trial
+            </a>
+            <a href="/login" class="glass-panel hover:bg-white/5 text-white font-bold py-4 px-8 rounded-xl transition-all border border-white/10 flex-1">
+                Dashboard Login
+            </a>
+        </div>
+        
+        <!-- Feature Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 text-left max-w-5xl">
+            <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-4">⚡</div>
+                <h3 class="text-xl font-bold mb-2">Dynamic Sequencing</h3>
+                <p class="text-gray-400 text-sm">Send a contact card, then an image, followed by text. Control the exact flow of your broadcast autonomously.</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-4">📱</div>
+                <h3 class="text-xl font-bold mb-2">Live Canvas Preview</h3>
+                <p class="text-gray-400 text-sm">See exactly how your messages will render on WhatsApp in real-time as you build your campaign.</p>
+            </div>
+            <div class="glass-panel p-6 rounded-2xl border border-white/10">
+                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-2xl mb-4">🛡️</div>
+                <h3 class="text-xl font-bold mb-2">Enterprise Security</h3>
+                <p class="text-gray-400 text-sm">Secured by JWT HttpOnly cookies, Bcrypt hashing, and optional Google Authenticator Two-Factor (MFA).</p>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
