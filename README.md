@@ -26,7 +26,7 @@ CBMS Pro is a high-performance, fully customizable backend robust queuing system
 
 ## Quick Start
 1. Ensure you have Python installed.
-2. Clone this repository and navigate to the root directory `Bulk whatsapp message`.
+2. Clone this repository and navigate to the root directory `Custom-Bulk-Message-Automation`.
 3. Set up the virtual environment:
    ```cmd
    python -m venv .venv
@@ -34,7 +34,7 @@ CBMS Pro is a high-performance, fully customizable backend robust queuing system
    ```
 4. Install dependencies:
    ```cmd
-   pip install fastapi uvicorn pandas openpyxl python-dotenv requests jinja2
+   pip install -r requirements.txt
    ```
 5. Place your `.env` file in the root directory:
    ```env
