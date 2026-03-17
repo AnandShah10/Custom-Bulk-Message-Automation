@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WASender Pro | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/30 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">WASender Pro</span>
+            </div>
+            <div class="text-sm text-gray-400 font-medium">Enterprise Edition</div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto py-12 px-4 relative z-10 flex flex-col lg:flex-row gap-8 items-start">
+        
+        <!-- Sidebar / Message Type Selector -->
+        <div class="w-full lg:w-1/4 glass-panel rounded-2xl p-6 shadow-2xl border border-white/10">
+            <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4 ml-2">Message Type</h3>
+            <div class="space-y-2 flex flex-col" id="typeSelectors">
+                <button type="button" data-type="text" class="type-btn active">📝 Text Message</button>
+                <button type="button" data-type="image" class="type-btn">🖼️ Image</button>
+                <button type="button" data-type="video" class="type-btn">🎥 Video</button>
+                <button type="button" data-type="document" class="type-btn">📄 Document</button>
+                <button type="button" data-type="location" class="type-btn">📍 Location</button>
+                <button type="button" data-type="contact" class="type-btn">👤 Contact Card</button>
+            </div>
+        </div>
+
+        <!-- Form Area -->
+        <div class="w-full lg:w-3/4 glass-panel rounded-3xl p-8 xl:p-12 shadow-2xl border border-white/10 form-container transition-all duration-500">
+            <div class="mb-8 hidden" id="successBanner">
+                <div class="glass-success border border-green-500/30 text-green-300 p-4 rounded-xl flex items-center gap-3">
+                    <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <div><strong class="block text-green-300 font-semibold" id="successCount">Campaign Launched!</strong><span class="text-sm text-green-400/80">Messages are queued and processing in the background.</span></div>
+                </div>
+            </div>
+            <div class="mb-8 hidden" id="errorBanner">
+                <div class="bg-red-500/10 border border-red-500/30 text-red-300 p-4 rounded-xl flex items-center gap-3">
+                    <svg class="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="errorText">An error occurred.</span>
+                </div>
+            </div>
+
+            <h2 class="text-3xl font-bold mb-2 text-white">Campaign Details</h2>
+            <p class="text-gray-400 mb-8 border-b border-white/10 pb-6">Configure your broadcast settings and upload recipients.</p>
+
+            <form id="campaignForm" class="space-y-8">
+                <input type="hidden" name="message_type" id="hiddenMessageType" value="text" />
+
+                <!-- API Key (Always visible) -->
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">WASender API Key</label>
+                    <input type="password" name="api_key" placeholder="Leave empty to use default .env key"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all">
+                </div>
+
+                <!-- Excel Upload (Always visible) -->
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Recipients List (.xlsx) <span class="text-red-400">*</span></label>
+                    <div class="relative group cursor-pointer border-2 border-dashed border-white/20 rounded-2xl p-8 hover:border-blue-500/50 hover:bg-white/[0.02] transition-all text-center file-drop-area">
+                        <input type="file" name="excel_file" id="excelFile" accept=".xlsx, .xls" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                        <div class="flex flex-col items-center justify-center pointer-events-none">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            </div>
+                            <h4 class="text-white font-medium mb-1">Upload Excel File</h4>
+                            <p class="text-sm text-gray-400" id="fileNameDisplay">Drag and drop or click to browse (Must contain 'Phone' column)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Media URL (For Image, Video, Document) -->
+                <div class="input-group dynamic-field hidden" data-shows="image,video,document">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" id="mediaUrlLabel">Media / Document URL</label>
+                    <input type="url" name="media_url" placeholder="https://example.com/file.jpg"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    <p class="text-xs text-gray-500 mt-2">Required if Image, Video, or Document is selected.</p>
+                </div>
+
+                <!-- Document Name (For Document) -->
+                <div class="input-group dynamic-field hidden" data-shows="document">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Document Name (with extension)</label>
+                    <input type="text" name="document_name" placeholder="Invoice.pdf"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+
+                <!-- Location Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 dynamic-field hidden" data-shows="location">
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Latitude</label>
+                        <input type="number" step="any" name="latitude" placeholder="e.g. 37.7749"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Longitude</label>
+                        <input type="number" step="any" name="longitude" placeholder="e.g. -122.4194"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Location Name</label>
+                        <input type="text" name="location_name" placeholder="e.g. Headquarters"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Location Address</label>
+                        <input type="text" name="location_address" placeholder="e.g. 123 Main St"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                </div>
+
+                <!-- Contact Fields -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 dynamic-field hidden" data-shows="contact">
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Contact Name</label>
+                        <input type="text" name="contact_name" placeholder="John Doe"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Contact Phone</label>
+                        <input type="text" name="contact_phone" placeholder="+1234567890"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                </div>
+
+                <!-- Message/Caption (For all except Contact) -->
+                <div class="input-group dynamic-field" data-shows="text,image,video,document,location">
+                    <label class="block text-sm font-medium text-gray-300 mb-2" id="msgLabel">Message Content / Caption</label>
+                    <textarea name="message" rows="5" placeholder="Hello {Name}, how are you today?"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    <div class="mt-2 flex items-center justify-between">
+                        <p class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded inline-block">💡 Supports variables like {Name}, {Company}</p>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" id="submitBtn"
+                        class="relative w-full overflow-hidden bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] hover:shadow-[0_0_60px_-15px_rgba(59,130,246,0.7)] hover:scale-[1.01] transition-all duration-300 group">
+                        <span class="relative z-10 flex items-center justify-center gap-2">
+                            <span>Launch Broadcast</span>
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        // UI Interaction Script
+        const btnSelectors = document.querySelectorAll('.type-btn');
+        const dynamicFields = document.querySelectorAll('.dynamic-field');
+        const hiddenMsgType = document.getElementById('hiddenMessageType');
+        const form = document.getElementById('campaignForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const fileInput = document.getElementById('excelFile');
+        const fileDisplay = document.getElementById('fileNameDisplay');
+        const successBanner = document.getElementById('successBanner');
+        const errorBanner = document.getElementById('errorBanner');
+        const successCount = document.getElementById('successCount');
+        const errorText = document.getElementById('errorText');
+
+        // File upload UI
+        fileInput.addEventListener('change', (e) => {
+            if(e.target.files.length > 0) {
+                fileDisplay.textContent = e.target.files[0].name;
+                fileDisplay.classList.add('text-blue-400');
+                fileDisplay.classList.remove('text-gray-400');
+            }
+        });
+
+        // Tab Switching / Multi-Select Logic
+        btnSelectors.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Toggle active state for multi-select
+                btn.classList.toggle('active');
+                
+                // Collect ALL active types
+                const activeTypes = Array.from(btnSelectors)
+                                        .filter(b => b.classList.contains('active'))
+                                        .map(b => b.dataset.type);
+                
+                // Enforce at least one selection
+                if(activeTypes.length === 0) {
+                    btn.classList.add('active');
+                    return; 
+                }
+
+                hiddenMsgType.value = activeTypes.join(',');
+
+                // Form Animation wrapper
+                const formContainer = document.querySelector('.form-container');
+                formContainer.style.opacity = '0.5';
+                formContainer.style.transform = 'scale(0.99)';
+
+                setTimeout(() => {
+                    // Show Fields if required by ANY of the active types
+                    dynamicFields.forEach(field => {
+                        const showsFor = field.dataset.shows.split(',');
+                        const shouldShow = activeTypes.some(type => showsFor.includes(type));
+                        if(shouldShow) {
+                            field.classList.remove('hidden');
+                            field.style.opacity = '1';
+                            field.style.transform = 'translateY(0)';
+                        } else {
+                            field.classList.add('hidden');
+                        }
+                    });
+                    
+                    formContainer.style.opacity = '1';
+                    formContainer.style.transform = 'scale(1)';
+                }, 200);
+            });
+        });
+
+        // AJAX Form Submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="relative z-10 flex items-center justify-center gap-2"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processing...</span>';
+            
+            successBanner.classList.add('hidden');
+            errorBanner.classList.add('hidden');
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch('/send-campaign', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+
+                if(response.ok) {
+                    successCount.textContent = `🚀 Campaign Launched! (${result.messages_queued} queued)`;
+                    successBanner.classList.remove('hidden');
+                    form.reset();
+                    fileDisplay.textContent = "Drag and drop or click to browse (Must contain 'Phone' column)";
+                    fileDisplay.classList.remove('text-blue-400');
+                    fileDisplay.classList.add('text-gray-400');
+                    // Reset to text view
+                    document.querySelector('[data-type="text"]').click();
+                } else {
+                    errorText.textContent = result.error || result.detail || 'An unknown error occurred';
+                    errorBanner.classList.remove('hidden');
+                }
+            } catch (err) {
+                errorText.textContent = 'Network error. Please try again.';
+                errorBanner.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <span class="relative z-10 flex items-center justify-center gap-2">
+                            <span>Launch Broadcast</span>
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </span>
+                        <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
