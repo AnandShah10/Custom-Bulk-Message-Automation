@@ -42,11 +42,28 @@
                     <input type="password" name="password" id="passwordInput" required minlength="8" placeholder="8+ characters"
                         class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 pr-12">
                     <button type="button" id="togglePassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors focus:outline-none">
-                        <svg id="eyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 eyeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        <svg id="eyeOffIcon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 eyeOffIcon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.225 0 2.37.214 3.427.597M8.825 8.825a3 3 0 004.35 4.35m1.425 1.425L3 3m18 18l-6.75-6.75" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Confirm Password</label>
+                <div class="relative">
+                    <input type="password" id="confirmPasswordInput" name="confirm_password" required minlength="8" placeholder="Repeat password"
+                        class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 pr-12">
+                    <button type="button" id="toggleConfirmPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors focus:outline-none">
+                        <svg class="w-5 h-5 eyeIcon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <svg class="w-5 h-5 eyeOffIcon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7 1.274-4.057 5.064-7 9.542-7 1.225 0 2.37.214 3.427.597M8.825 8.825a3 3 0 004.35 4.35m1.425 1.425L3 3m18 18l-6.75-6.75" />
                         </svg>
                     </button>
@@ -92,23 +109,37 @@
         const errorBanner = document.getElementById('errorBanner');
         const successBanner = document.getElementById('successBanner');
 
-        const togglePassword = document.getElementById('togglePassword');
-        const passwordInput = document.getElementById('passwordInput');
-        const eyeIcon = document.getElementById('eyeIcon');
-        const eyeOffIcon = document.getElementById('eyeOffIcon');
+        // Toggle Logic Helper
+        function setupToggle(btnId, inputId) {
+            const btn = document.getElementById(btnId);
+            const input = document.getElementById(inputId);
+            const eye = btn.querySelector('.eyeIcon');
+            const eyeOff = btn.querySelector('.eyeOffIcon');
 
-        togglePassword.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
-            
-            // Toggle icons
-            eyeIcon.classList.toggle('hidden');
-            eyeOffIcon.classList.toggle('hidden');
-        });
+            btn.addEventListener('click', () => {
+                const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                input.setAttribute('type', type);
+                eye.classList.toggle('hidden');
+                eyeOff.classList.toggle('hidden');
+            });
+        }
+
+        setupToggle('togglePassword', 'passwordInput');
+        setupToggle('toggleConfirmPassword', 'confirmPasswordInput');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             errorBanner.classList.add('hidden');
+            
+            const password = document.getElementById('passwordInput').value;
+            const confirmPassword = document.getElementById('confirmPasswordInput').value;
+            
+            if (password !== confirmPassword) {
+                errorBanner.textContent = "Passwords do not match.";
+                errorBanner.classList.remove('hidden');
+                return;
+            }
+
             const originalText = submitBtn.innerText;
             submitBtn.innerText = "Processing...";
             submitBtn.disabled = true;
@@ -135,7 +166,7 @@
                     submitBtn.disabled = false;
                 }
             } catch (err) {
-                errorBanner.textContent = "Network error occurred.";
+                errorBanner.textContent = "Unable to connect to server. Check your internet.";
                 errorBanner.classList.remove('hidden');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;

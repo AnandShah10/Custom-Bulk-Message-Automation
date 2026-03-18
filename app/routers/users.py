@@ -40,3 +40,9 @@ async def update_password(
     db.commit()
     
     return {"status": "ok", "message": "Password updated successfully."}
+
+@router.get("/users/me/logs")
+async def get_my_logs(current_user: User = Depends(get_current_active_user_or_401), db: Session = Depends(get_db)):
+    """Returns the last 10 logs for the current user."""
+    logs = db.query(SystemLog).filter(SystemLog.user_id == current_user.id).order_by(SystemLog.created_at.desc()).limit(10).all()
+    return [{"timestamp": l.created_at, "action": l.action, "details": l.details} for l in logs]

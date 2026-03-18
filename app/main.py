@@ -47,14 +47,21 @@ async def custom_exception_handler(request: Request, exc: StarletteHTTPException
         return templates.TemplateResponse("404.html", {"request": request, "user": user}, status_code=404)
     
     if exc.status_code == 401:
-        # Redirect unauthenticated users to login page
-        return RedirectResponse(url="/login")
+        # Only redirect to login page for browser navigation (HTML requests)
+        # For API calls or AJAX, return JSON so the frontend can handle it
+        if not request.url.path.startswith("/auth/") and "text/html" in request.headers.get("accept", ""):
+            return RedirectResponse(url="/login")
+        
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=401, content={"detail": exc.detail})
         
     if exc.status_code == 403:
         # Serve unauthorized page for forbidden access
         return templates.TemplateResponse("unauthorized.html", {"request": request, "user": user}, status_code=403)
         
-    return HTMLResponse(status_code=exc.status_code, content=str(exc.detail))
+    # For other errors (like 400 Bad Request), return JSON for AJAX compatibility
+    from fastapi.responses import JSONResponse
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request, user = Depends(get_current_user)):
@@ -104,7 +111,9 @@ async def handle_form(
     video_caption: str = Form(None),
     document_caption: str = Form(None),
     location_caption: str = Form(None),
-    media_url: str = Form(None),
+    image_url: str = Form(None),
+    video_url: str = Form(None),
+    document_url: str = Form(None),
     document_name: str = Form(None),
     latitude: float = Form(None),
     longitude: float = Form(None),
@@ -112,6 +121,13 @@ async def handle_form(
     location_address: str = Form(None),
     contact_name: str = Form(None),
     contact_phone: str = Form(None),
+    audio_url: str = Form(None),
+    audio_text: str = Form(None),
+    sticker_url: str = Form(None),
+    sticker_text: str = Form(None),
+    poll_question: str = Form(None),
+    poll_options: str = Form(None),
+    poll_multi_select: bool = Form(False),
     excel_file: UploadFile = File(...)
 ):
     try:
@@ -121,11 +137,19 @@ async def handle_form(
 
         content = await excel_file.read()
         df = pd.read_excel(io.BytesIO(content))
-        
+
         if 'Phone' not in df.columns:
             return {"error": "Excel must have a 'Phone' column"}
+        
+        # Filter valid phones first to get accurate count
+        def is_valid_phone(p):
+            p_str = str(p).split('.')[0].strip().lower()
+            return p_str and p_str != 'nan'
 
+        df = df[df['Phone'].apply(is_valid_phone)]
+        contacts_reached = len(df)
         count = 0
+
         for _, row in df.iterrows():
             phone = str(row['Phone']).split('.')[0].strip()
             
@@ -133,29 +157,37 @@ async def handle_form(
             def format_text(txt):
                 if not txt: return ""
                 try:
-                    return txt.format(**row.to_dict()) if "{" in txt else txt
-                except KeyError:
-                    return txt
+                    return str(txt).format(**row.to_dict()) if "{" in str(txt) else str(txt)
+                except (KeyError, ValueError, TypeError):
+                    return str(txt)
 
             types = [t.strip() for t in message_type.split(',')]
             for t in types:
                 if not t: continue
-                payload = {"to": phone}
+                payload: dict = {"to": phone}
                 
                 if t == "text":
                     payload["text"] = format_text(text_message)
                 elif t == "image":
-                    payload["imageUrl"] = media_url
+                    payload["imageUrl"] = image_url
                     cap = format_text(image_caption)
                     if cap: payload["text"] = cap
                 elif t == "video":
-                    payload["videoUrl"] = media_url
+                    payload["videoUrl"] = video_url
                     cap = format_text(video_caption)
                     if cap: payload["text"] = cap
                 elif t == "document":
-                    payload["documentUrl"] = media_url
+                    payload["documentUrl"] = document_url
                     payload["fileName"] = document_name or "Document"
                     cap = format_text(document_caption)
+                    if cap: payload["text"] = cap
+                elif t == "audio":
+                    payload["audioUrl"] = audio_url
+                    cap = format_text(audio_text)
+                    if cap: payload["text"] = cap
+                elif t == "sticker":
+                    payload["stickerUrl"] = sticker_url
+                    cap = format_text(sticker_text)
                     if cap: payload["text"] = cap
                 elif t == "location":
                     cap = format_text(location_caption)
@@ -171,11 +203,18 @@ async def handle_form(
                         "name": contact_name,
                         "phone": contact_phone
                     }
+                elif t == "poll":
+                    options_list = [format_text(opt.strip()) for opt in (poll_options or "").split('\n') if opt.strip()]
+                    payload["poll"] = {
+                        "question": format_text(poll_question),
+                        "options": options_list,
+                        "multiSelect": poll_multi_select
+                    }
                 
                 SEND_QUEUE.enqueue(payload, final_api_key)
                 count += 1
 
-        return {"status": "success", "messages_queued": count}
+        return {"status": "success", "messages_queued": count, "contacts_reached": contacts_reached}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

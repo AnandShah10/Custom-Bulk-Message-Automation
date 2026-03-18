@@ -35,21 +35,34 @@
             </div>
             <div class="flex items-center gap-4">
                 {% if user.role == 'admin' %}
-                    <a href="/admin" class="bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-red-500/30">Admin Panel</a>
+                <a href="/admin"
+                    class="bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-red-500/30">Admin
+                    Panel</a>
                 {% endif %}
-                
-                <div class="relative group cursor-pointer border border-white/10 bg-white/5 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors">
+
+                <div
+                    class="relative group cursor-pointer border border-white/10 bg-white/5 rounded-xl px-4 py-2 hover:bg-white/10 transition-colors">
                     <div class="flex items-center gap-2">
-                        <div class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-xs font-bold">{{ user.username[0]|upper }}</div>
+                        <div
+                            class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-xs font-bold">
+                            {{ user.username[0]|upper }}</div>
                         <span class="text-sm font-medium">{{ user.username }}</span>
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
                     </div>
-                    
+
                     <!-- Dropdown -->
-                    <div class="absolute right-0 mt-2 w-48 bg-[#121c32] rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100">
-                        <a href="/profile" class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security Settings</a>
+                    <div
+                        class="absolute right-0 mt-2 w-48 bg-[#121c32] rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100">
+                        <a href="/profile"
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security
+                            Settings</a>
                         <form action="/auth/logout" method="POST" class="block w-full text-left">
-                            <button type="submit" class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sign Out</button>
+                            <button type="submit"
+                                class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sign
+                                Out</button>
                         </form>
                     </div>
                 </div>
@@ -67,9 +80,12 @@
                 <button type="button" data-type="text" class="type-btn">📝 Text Message</button>
                 <button type="button" data-type="image" class="type-btn">🖼️ Image</button>
                 <button type="button" data-type="video" class="type-btn">🎥 Video</button>
+                <button type="button" data-type="audio" class="type-btn">🎵 Audio</button>
                 <button type="button" data-type="document" class="type-btn">📄 Document</button>
+                <button type="button" data-type="sticker" class="type-btn">✨ Sticker</button>
                 <button type="button" data-type="location" class="type-btn">📍 Location</button>
                 <button type="button" data-type="contact" class="type-btn">👤 Contact Card</button>
+                <button type="button" data-type="poll" class="type-btn">📊 Live Poll</button>
             </div>
         </div>
 
@@ -82,9 +98,11 @@
                     <svg class="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                     </svg>
-                    <div><strong class="block text-green-300 font-semibold" id="successCount">Campaign
-                            Launched!</strong><span class="text-sm text-green-400/80">Messages are queued and processing
-                            in the background.</span></div>
+                    <div>
+                        <strong class="block text-green-300 font-semibold" id="successTitle">Campaign Launched!</strong>
+                        <span class="text-sm text-green-400/80" id="successDetail">Messages are queued and processing in
+                            the background.</span>
+                    </div>
                 </div>
             </div>
             <div class="mb-8 hidden" id="errorBanner">
@@ -154,13 +172,39 @@
                     </div>
                 </div>
 
-                <!-- Media URL (For Image, Video, Document) -->
-                <div class="input-group dynamic-field hidden" data-shows="image,video,document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2" id="mediaUrlLabel">Media / Document
-                        URL</label>
-                    <input type="url" name="media_url" placeholder="https://example.com/file.jpg"
+                <!-- Image URL -->
+                <div class="input-group dynamic-field hidden" data-shows="image">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                    <p class="text-xs text-gray-500 mt-2">Required if Image, Video, or Document is selected.</p>
+                </div>
+
+                <!-- Video URL -->
+                <div class="input-group dynamic-field hidden" data-shows="video">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Video URL</label>
+                    <input type="url" name="video_url" placeholder="https://example.com/video.mp4"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+
+                <!-- Audio URL -->
+                <div class="input-group dynamic-field hidden" data-shows="audio">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio URL</label>
+                    <input type="url" name="audio_url" placeholder="https://example.com/audio.mp3"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+
+                <!-- Document URL -->
+                <div class="input-group dynamic-field hidden" data-shows="document">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Document URL</label>
+                    <input type="url" name="document_url" placeholder="https://example.com/file.pdf"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+
+                <!-- Sticker URL -->
+                <div class="input-group dynamic-field hidden" data-shows="sticker">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL</label>
+                    <input type="url" name="sticker_url" placeholder="https://example.com/sticker.webp"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
 
                 <!-- Document Name (For Document) -->
@@ -208,6 +252,26 @@
                     </div>
                 </div>
 
+                <!-- Poll Fields -->
+                <div class="space-y-6 dynamic-field hidden" data-shows="poll">
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Poll Question</label>
+                        <input type="text" name="poll_question" placeholder="Which color do you like?"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Poll Options (One per line)</label>
+                        <textarea name="poll_options" rows="4" placeholder="Red\nBlue\nGreen"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                    <div class="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
+                        <input type="checkbox" name="poll_multi_select" id="pollMultiSelect"
+                            class="w-5 h-5 rounded border-white/20 bg-black/20 text-blue-500 focus:ring-blue-500/50">
+                        <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow
+                            Multiple Selections</label>
+                    </div>
+                </div>
+
                 <!-- Message/Caption Fields (Isolated by Type) -->
                 <div class="input-group dynamic-field hidden" data-shows="text">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Text Content <span
@@ -232,6 +296,18 @@
                 <div class="input-group dynamic-field hidden" data-shows="document">
                     <label class="block text-sm font-medium text-gray-300 mb-2">Document Caption</label>
                     <textarea name="document_caption" rows="2" placeholder="Attached is your requested document."
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                </div>
+
+                <div class="input-group dynamic-field hidden" data-shows="audio">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio Caption / Text</label>
+                    <textarea name="audio_text" rows="2" placeholder="Listen to this audio!"
+                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                </div>
+
+                <div class="input-group dynamic-field hidden" data-shows="sticker">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker Caption / Text</label>
+                    <textarea name="sticker_text" rows="2" placeholder="Check out this sticker!"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                 </div>
 
@@ -301,7 +377,9 @@
         const fileDisplay = document.getElementById('fileNameDisplay');
         const successBanner = document.getElementById('successBanner');
         const errorBanner = document.getElementById('errorBanner');
-        const successCount = document.getElementById('successCount');
+        // Success Banner Elements
+        const successTitle = document.getElementById('successTitle');
+        const successDetail = document.getElementById('successDetail');
         const errorText = document.getElementById('errorText');
         const chatPreviewArea = document.getElementById('chatPreviewArea');
 
@@ -330,11 +408,21 @@
         const docCap = document.querySelector('textarea[name="document_caption"]');
         const locCap = document.querySelector('textarea[name="location_caption"]');
 
+        const imgUrl = document.querySelector('input[name="image_url"]');
+        const vidUrl = document.querySelector('input[name="video_url"]');
+        const audioUrl = document.querySelector('input[name="audio_url"]');
+        const docUrl = document.querySelector('input[name="document_url"]');
+        const stiUrl = document.querySelector('input[name="sticker_url"]');
         const docName = document.querySelector('input[name="document_name"]');
+        const pollQ = document.querySelector('input[name="poll_question"]');
+        const pollO = document.querySelector('textarea[name="poll_options"]');
+        const pollM = document.querySelector('input[name="poll_multi_select"]');
         const locName = document.querySelector('input[name="location_name"]');
         const locAddress = document.querySelector('input[name="location_address"]');
         const conName = document.querySelector('input[name="contact_name"]');
         const conPhone = document.querySelector('input[name="contact_phone"]');
+        const audio_text = document.querySelector('textarea[name="audio_text"]');
+        const sticker_text = document.querySelector('textarea[name="sticker_text"]');
 
         let selectedSequence = []; // Tracks ordered intent
 
@@ -428,6 +516,21 @@
                     contentHTML = `<div class="media-placeholder">▶️</div>`;
                     if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
                 }
+                else if (type === 'audio') {
+                    contentHTML = `
+                        <div class="bg-black/20 p-3 rounded flex items-center gap-4">
+                            <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">▶️</div>
+                            <div class="flex-1">
+                                <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                                    <div class="w-1/3 h-full bg-blue-500"></div>
+                                </div>
+                            </div>
+                            <div class="text-[10px] text-gray-500">0:12</div>
+                        </div>`;
+                }
+                else if (type === 'sticker') {
+                    contentHTML = `<div class="media-placeholder border-none overflow-visible"><img src="https://images.unsplash.com/photo-1599508544955-f269a7c369dd?q=80&w=150&h=150&fit=crop" class="w-24 h-24 object-contain animate-bounce"></div>`;
+                }
                 else if (type === 'document') {
                     const baseText = docCap.value.trim();
                     const docTitle = docName.value.trim() || 'Document.pdf';
@@ -460,6 +563,24 @@
                         <div class="text-blue-300 text-sm text-center font-medium">Message</div>
                     `;
                 }
+                else if (type === 'poll') {
+                    const question = pollQ.value.trim() || 'Poll Question?';
+                    const optionsArr = pollO.value.split('\n').filter(o => o.trim()).slice(0, 4);
+                    if (optionsArr.length === 0) optionsArr.push('Option 1', 'Option 2');
+
+                    let optionsHTML = optionsArr.map(o => `
+                        <div class="flex items-center gap-3 bg-white/5 border border-white/10 p-2 rounded-lg text-sm">
+                            <div class="w-4 h-4 rounded-full border border-white/30"></div>
+                            <div class="flex-1">${o}</div>
+                        </div>
+                    `).join('');
+
+                    contentHTML = `
+                        <div class="font-bold text-base mb-3">${question}</div>
+                        <div class="space-y-2 mb-3">${optionsHTML}</div>
+                        <div class="text-[10px] text-gray-500 text-center italic">Select one or more</div>
+                    `;
+                }
 
                 const bubble = `
                 <div class="bubble-out animate-[popIn_0.2s_ease-out]">
@@ -474,7 +595,7 @@
         }
 
         // Bind form inputs to update preview
-        [msgText, imgCap, vidCap, docCap, locCap, docName, locName, locAddress, conName, conPhone].forEach(input => {
+        [msgText, imgCap, vidCap, docCap, locCap, audio_text, sticker_text, imgUrl, vidUrl, audioUrl, docUrl, stiUrl, docName, pollQ, pollO, pollM, locName, locAddress, conName, conPhone].forEach(input => {
             if (input) {
                 input.addEventListener('keyup', updatePreview);
                 input.addEventListener('change', updatePreview);
@@ -509,7 +630,8 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    successCount.textContent = `🚀 Campaign Launched! (${result.messages_queued} queued)`;
+                    successTitle.textContent = `🚀 Campaign Launched!`;
+                    successDetail.innerHTML = `<strong>${result.messages_queued}</strong> messages queued for <strong>${result.contacts_reached}</strong> contacts.`;
                     successBanner.classList.remove('hidden');
                     form.reset();
                     fileDisplay.textContent = "Drag and drop or click to browse (Must contain 'Phone' column)";

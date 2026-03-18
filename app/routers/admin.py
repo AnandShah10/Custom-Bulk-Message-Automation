@@ -42,3 +42,39 @@ async def admin_dashboard(request: Request, user: User = Depends(check_admin), d
         "all_users": all_users,
         "recent_logs": recent_logs
     })
+
+@router.post("/admin/users/{user_id}/toggle-status")
+async def toggle_user_status(user_id: int, current_admin: User = Depends(check_admin), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.id == current_admin.id:
+        raise HTTPException(status_code=400, detail="Cannot disable yourself")
+        
+    user.is_active = not user.is_active
+    db.commit()
+    
+    action = "USER_ENABLED" if user.is_active else "USER_DISABLED"
+    log = SystemLog(user_id=current_admin.id, action=action, details=f"Admin {current_admin.username} toggled status for {user.username}")
+    db.add(log)
+    db.commit()
+    
+    return {"status": "ok", "is_active": user.is_active}
+
+@router.post("/admin/users/{user_id}/toggle-role")
+async def toggle_user_role(user_id: int, current_admin: User = Depends(check_admin), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if user.id == current_admin.id:
+        raise HTTPException(status_code=400, detail="Cannot demote yourself")
+
+    user.role = "admin" if user.role == "user" else "user"
+    db.commit()
+    
+    action = "ROLE_CHANGED"
+    log = SystemLog(user_id=current_admin.id, action=action, details=f"Admin {current_admin.username} changed role of {user.username} to {user.role}")
+    db.add(log)
+    db.commit()
+    
+    return {"status": "ok", "role": user.role}

@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Form, Request
+from starlette.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models import User, SystemLog
@@ -14,8 +15,11 @@ router = APIRouter(tags=["Authentication"])
 async def signup(
     username: str = Form(...),
     password: str = Form(...),
+    confirm_password: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    if password != confirm_password:
+         raise HTTPException(status_code=400, detail="Passwords do not match")
     if db.query(User).filter(User.username == username).first():
         raise HTTPException(status_code=400, detail="Username already registered")
     
@@ -79,7 +83,6 @@ async def logout(response: Response, user = Depends(get_current_user), db: Sessi
         db.add(log)
         db.commit()
     
-    from starlette.responses import RedirectResponse
     res = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     res.delete_cookie("session_token")
     return res
@@ -90,7 +93,6 @@ from datetime import datetime, timedelta
 @router.get("/password-reset", response_class=Response)
 async def get_password_reset_page(request: Request, user = Depends(get_current_user)):
     if user:
-        from starlette.responses import RedirectResponse
         return RedirectResponse(url="/dashboard")
     from app.main import templates
     return templates.TemplateResponse("password_reset.html", {"request": request})

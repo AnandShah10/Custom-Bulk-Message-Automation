@@ -42,6 +42,7 @@ class WasenderQueue:
         
         # Clean internal keys
         send_payload = {k: v for k, v in payload.items() if not k.startswith("_")}
+        logger.info("📤 Sending payload to API: %s", send_payload)
         
         attempt = 0
         delay = 1.0

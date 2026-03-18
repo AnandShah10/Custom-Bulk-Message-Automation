@@ -30,77 +30,131 @@
         
         <!-- Sidebar Menu -->
         <div class="w-full md:w-1/4 glass-panel rounded-2xl p-4 shadow-xl border border-white/10">
-            <nav class="space-y-1">
-                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium">👤 Profile</button>
-                <button class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 transition-colors">🔐 Security</button>
+            <nav class="space-y-1" id="profileTabs">
+                <button onclick="showTab('profile')" id="tabBtn-profile" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-white/10 text-white font-medium">👤 Profile</button>
+                <button onclick="showTab('security')" id="tabBtn-security" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-400 transition-colors">🔐 Security</button>
                 <form action="/auth/logout" method="POST" class="w-full mt-4">
                     <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 transition-colors">⬅️ Logout</button>
                 </form>
             </nav>
         </div>
 
-        <!-- Main Content (Security Page Defaults) -->
+        <!-- Main Content -->
         <div class="w-full md:w-3/4 space-y-8">
-            <h2 class="text-3xl font-bold mb-2">Account Security</h2>
             
-            <!-- Change Password -->
-            <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
-                <h3 class="text-xl font-bold mb-4">Update Password</h3>
-                <form id="passwordForm" class="space-y-4">
-                    <div id="pwNotice" class="hidden text-sm p-3 rounded bg-blue-500/10 text-blue-400 mb-4"></div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">Current Password</label>
-                        <input type="password" name="current_password" required
-                            class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white">
+            <!-- Profile Tab Content -->
+            <div id="profileSection" class="space-y-8">
+                <h2 class="text-3xl font-bold mb-2">My Profile</h2>
+                <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                    <div class="flex items-center gap-6 mb-8">
+                        <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-3xl font-bold shadow-2xl shadow-blue-500/20">
+                            {{ user.username[0]|upper }}
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-white">{{ user.username }}</h3>
+                            <p class="text-gray-400 capitalize">{{ user.role }} Account</p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">New Password</label>
-                        <input type="password" name="new_password" required minlength="8"
-                            class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-white/5">
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Account Status</p>
+                            <p class="text-green-400 font-medium flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span> Active
+                            </p>
+                        </div>
+                        <div class="space-y-1">
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">User ID</p>
+                            <p class="text-gray-300 font-mono">#{{ user.id }}</p>
+                        </div>
                     </div>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-6 rounded-lg transition-colors mt-2">
-                        Save Password
-                    </button>
-                </form>
+                </div>
             </div>
 
-            <!-- Two-Factor Authentication -->
-            <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-xl font-bold">Two-Factor Authentication (MFA)</h3>
-                        <p class="text-sm text-gray-400 mt-1" id="mfaStatusText">Checking MFA status...</p>
-                    </div>
-                    <div id="mfaBadge" class="hidden px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></div>
-                </div>
-
-                <!-- MFA Setup Action Area -->
-                <div id="mfaSetupBox" class="hidden border border-white/5 bg-black/20 p-6 rounded-2xl">
-                    <p class="mb-4 text-sm text-gray-300">Scan this QR code using Google Authenticator, Authy, or Microsoft Authenticator.</p>
-                    <div class="flex justify-center mb-6">
-                        <img id="qrCodeImg" class="rounded-xl border-4 border-white shadow-2xl w-48 h-48" style="image-rendering: pixelated;"/>
-                    </div>
-                    <form id="mfaEnableForm" class="max-w-xs mx-auto space-y-3">
-                        <input type="text" name="mfa_code" placeholder="6-digit code" required autocomplete="off"
-                            class="custom-input w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white text-center font-mono text-xl tracking-widest">
-                        <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-500/20">
-                            Verify & Enable MFA
+            <!-- Security Tab Content -->
+            <div id="securitySection" class="hidden space-y-8">
+                <h2 class="text-3xl font-bold mb-2">Account Security</h2>
+                
+                <!-- Change Password -->
+                <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                    <h3 class="text-xl font-bold mb-4">Update Password</h3>
+                    <form id="passwordForm" class="space-y-4">
+                        <div id="pwNotice" class="hidden text-sm p-3 rounded bg-blue-500/10 text-blue-400 mb-4"></div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Current Password</label>
+                            <input type="password" name="current_password" required
+                                class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">New Password</label>
+                            <input type="password" name="new_password" required minlength="8"
+                                class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-blue-500/20">
+                            Save Password
                         </button>
-                        <p id="mfaError" class="text-red-400 text-xs text-center hidden"></p>
                     </form>
                 </div>
-                
-                <div id="mfaActionButtons" class="mt-4">
-                    <button id="btnSetupMfa" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg transition-colors hidden">
-                        Set up MFA Now
-                    </button>
+
+                <!-- Two-Factor Authentication -->
+                <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="text-xl font-bold">Two-Factor Authentication (MFA)</h3>
+                            <p class="text-sm text-gray-400 mt-1" id="mfaStatusText">Checking MFA status...</p>
+                        </div>
+                        <div id="mfaBadge" class="hidden px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></div>
+                    </div>
+
+                    <div id="mfaSetupBox" class="hidden border border-white/5 bg-black/20 p-6 rounded-2xl">
+                        <!-- MFA setup content... -->
+                        <p class="mb-4 text-sm text-gray-300">Scan this QR code using Google Authenticator, Authy, or Microsoft Authenticator.</p>
+                        <div class="flex justify-center mb-6">
+                            <img id="qrCodeImg" class="rounded-xl border-4 border-white shadow-2xl w-48 h-48" style="image-rendering: pixelated;"/>
+                        </div>
+                        <form id="mfaEnableForm" class="max-w-xs mx-auto space-y-3">
+                            <input type="text" name="mfa_code" placeholder="6-digit code" required autocomplete="off"
+                                class="custom-input w-full bg-black/40 border border-white/20 rounded-xl px-4 py-3 text-white text-center font-mono text-xl tracking-widest">
+                            <button type="submit" class="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-green-500/20">
+                                Verify & Enable MFA
+                            </button>
+                            <p id="mfaError" class="text-red-400 text-xs text-center hidden"></p>
+                        </form>
+                    </div>
+                    
+                    <div id="mfaActionButtons" class="mt-4">
+                        <button id="btnSetupMfa" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg transition-colors hidden">
+                            Set up MFA Now
+                        </button>
+                    </div>
                 </div>
 
+                <!-- Login History (Advanced) -->
+                <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
+                    <h3 class="text-xl font-bold mb-4">Recent Activity</h3>
+                    <div class="space-y-4" id="logHistory">
+                        <p class="text-sm text-gray-500">Loading activity logs...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
 
     <script>
+        // Tab Logic
+        function showTab(tabName) {
+            document.getElementById('profileSection').classList.add('hidden');
+            document.getElementById('securitySection').classList.add('hidden');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-white/10', 'text-white');
+                b.classList.add('text-gray-400');
+            });
+
+            document.getElementById(tabName + 'Section').classList.remove('hidden');
+            document.getElementById('tabBtn-' + tabName).classList.add('bg-white/10', 'text-white');
+            document.getElementById('tabBtn-' + tabName).classList.remove('text-gray-400');
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             // Check Profile Status
             try {
@@ -124,6 +178,28 @@
                     }
                 }
             } catch(e) {}
+
+            // Load Logs
+            try {
+                const logRes = await fetch('/users/me/logs');
+                if(logRes.ok) {
+                    const logs = await logRes.json();
+                    const container = document.getElementById('logHistory');
+                    if(logs.length === 0) {
+                        container.innerHTML = '<p class="text-sm text-gray-500 italic">No recent activity detected.</p>';
+                    } else {
+                        container.innerHTML = logs.map(l => `
+                            <div class="flex items-start justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-200">${l.action}</p>
+                                    <p class="text-xs text-gray-500">${l.details}</p>
+                                </div>
+                                <span class="text-[10px] text-gray-600 font-mono">${new Date(l.timestamp).toLocaleString()}</span>
+                            </div>
+                        `).join('');
+                    }
+                }
+            } catch(e) {}
         });
 
         // Setup MFA Flow
@@ -137,7 +213,9 @@
                     document.getElementById('mfaSetupBox').classList.remove('hidden');
                     e.target.classList.add('hidden');
                 }
-            } catch (err) {}
+            } catch (err) {
+                e.target.disabled = false;
+            }
         });
 
         // Enable MFA Verification
@@ -153,13 +231,15 @@
                 const res = await fetch('/mfa/enable', { method: 'POST', body: formData });
                 const data = await res.json();
                 if(res.ok) {
-                    window.location.reload(); // Hard reload to show enabled status
+                    window.location.reload(); 
                 } else {
                     err.textContent = data.detail || "Invalid code.";
                     err.classList.remove('hidden');
                     btn.textContent = "Verify & Enable MFA";
                 }
-            } catch (e) {}
+            } catch (e) {
+                btn.textContent = "Verify & Enable MFA";
+            }
         });
 
         // Password Update Flow
@@ -181,7 +261,10 @@
                     notice.classList.add('bg-red-500/10', 'text-red-400');
                     notice.textContent = result.detail || "Failed to update password.";
                 }
-             } catch (err) {}
+             } catch (err) {
+                 notice.classList.add('bg-red-500/10', 'text-red-400');
+                 notice.textContent = "Network error. Please try again.";
+             }
         });
     </script>
 </body>
