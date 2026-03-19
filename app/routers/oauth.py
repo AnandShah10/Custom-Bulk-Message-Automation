@@ -53,6 +53,7 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
             
         email = user_info.get('email')
         google_id = user_info.get('sub')
+        full_name = user_info.get('name')
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Google authentication failed: {str(e)}")
@@ -65,9 +66,11 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
         user = db.query(User).filter(User.username == email).first()
         if user:
             user.google_id = google_id
+            if not user.full_name:
+                user.full_name = full_name
         else:
             # Create a brand new user
-            user = User(username=email, google_id=google_id, hashed_password="OAUTH_USER_NO_PASSWORD")
+            user = User(username=email, google_id=google_id, full_name=full_name, hashed_password="OAUTH_USER_NO_PASSWORD")
             db.add(user)
         
         db.commit()
@@ -106,6 +109,7 @@ async def auth_microsoft_callback(request: Request, db: Session = Depends(get_db
             
         email = user_info.get('email') or user_info.get('preferred_username')
         microsoft_id = user_info.get('oid') or user_info.get('sub')
+        full_name = user_info.get('name')
         
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Microsoft authentication failed: {str(e)}")
@@ -116,8 +120,10 @@ async def auth_microsoft_callback(request: Request, db: Session = Depends(get_db
         user = db.query(User).filter(User.username == email).first()
         if user:
             user.microsoft_id = microsoft_id
+            if not user.full_name:
+                user.full_name = full_name
         else:
-            user = User(username=email, microsoft_id=microsoft_id, hashed_password="OAUTH_USER_NO_PASSWORD")
+            user = User(username=email, microsoft_id=microsoft_id, full_name=full_name, hashed_password="OAUTH_USER_NO_PASSWORD")
             db.add(user)
             
         db.commit()

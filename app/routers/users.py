@@ -11,12 +11,27 @@ async def read_users_me(current_user: User = Depends(get_current_active_user_or_
     """Returns the current logged-in user's profile data."""
     return {
         "id": current_user.id,
+        "public_id": current_user.public_id,
         "username": current_user.username,
+        "full_name": current_user.full_name,
         "role": current_user.role,
         "mfa_enabled": current_user.mfa_enabled,
         "google_linked": bool(current_user.google_id),
         "microsoft_linked": bool(current_user.microsoft_id)
     }
+
+@router.post("/users/me/profile")
+async def update_profile(
+    full_name: str = Form(None),
+    current_user: User = Depends(get_current_active_user_or_401),
+    db: Session = Depends(get_db)
+):
+    """Update user's profile details."""
+    if full_name is not None:
+        current_user.full_name = full_name
+        
+    db.commit()
+    return {"status": "ok", "message": "Profile updated successfully.", "full_name": current_user.full_name}
 
 @router.post("/users/me/password")
 async def update_password(

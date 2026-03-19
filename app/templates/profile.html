@@ -51,8 +51,8 @@
                             {{ user.username[0]|upper }}
                         </div>
                         <div>
-                            <h3 class="text-2xl font-bold text-white">{{ user.username }}</h3>
-                            <p class="text-gray-400 capitalize">{{ user.role }} Account</p>
+                            <h3 class="text-2xl font-bold text-white" id="displayName">{{ user.full_name or user.username }}</h3>
+                            <p class="text-gray-400 capitalize">{{ user.role }} Account • <span id="displayEmail">{{ user.username }}</span></p>
                         </div>
                     </div>
                     
@@ -64,10 +64,23 @@
                             </p>
                         </div>
                         <div class="space-y-1">
-                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">User ID</p>
-                            <p class="text-gray-300 font-mono">#{{ user.id }}</p>
+                            <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Public ID (UUID)</p>
+                            <p class="text-gray-300 font-mono text-sm">{{ user.public_id }}</p>
                         </div>
                     </div>
+
+                    <!-- Update Profile Fields -->
+                    <form id="profileUpdateForm" class="mt-8 pt-8 border-t border-white/5 space-y-4">
+                        <div id="profileNotice" class="hidden text-sm p-3 rounded bg-blue-500/10 text-blue-400 mb-4"></div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                            <input type="text" name="full_name" value="{{ user.full_name or '' }}" placeholder="Enter your full name"
+                                class="custom-input w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                        </div>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg shadow-blue-500/20">
+                            Update Name
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -266,6 +279,31 @@
                  notice.textContent = "Network error. Please try again.";
              }
         });
+
+         // Profile Update Flow
+         document.getElementById('profileUpdateForm').addEventListener('submit', async (e) => {
+             e.preventDefault();
+             const notice = document.getElementById('profileNotice');
+             const formData = new FormData(e.target);
+             
+             try {
+                const res = await fetch('/users/me/profile', { method: 'POST', body: formData });
+                const result = await res.json();
+                
+                notice.classList.remove('hidden', 'bg-red-500/10', 'text-red-400', 'bg-green-500/10', 'text-green-400');
+                if(res.ok) {
+                    notice.classList.add('bg-green-500/10', 'text-green-400');
+                    notice.textContent = "Profile updated successfully.";
+                    document.getElementById('displayName').textContent = result.full_name || document.getElementById('displayEmail').textContent;
+                } else {
+                    notice.classList.add('bg-red-500/10', 'text-red-400');
+                    notice.textContent = result.detail || "Failed to update profile.";
+                }
+             } catch (err) {
+                 notice.classList.add('bg-red-500/10', 'text-red-400');
+                 notice.textContent = "Network error. Please try again.";
+             }
+         });
     </script>
 </body>
 </html>

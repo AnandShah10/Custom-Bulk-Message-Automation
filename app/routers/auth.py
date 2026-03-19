@@ -16,6 +16,7 @@ async def signup(
     username: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    full_name: str = Form(None),
     db: Session = Depends(get_db)
 ):
     if password != confirm_password:
@@ -25,6 +26,7 @@ async def signup(
     
     new_user = User(
         username=username,
+        full_name=full_name,
         hashed_password=get_password_hash(password)
     )
     db.add(new_user)

@@ -45,8 +45,8 @@
                     <div class="flex items-center gap-2">
                         <div
                             class="w-6 h-6 rounded-full bg-gradient-to-tr from-blue-400 to-purple-400 flex items-center justify-center text-xs font-bold">
-                            {{ user.username[0]|upper }}</div>
-                        <span class="text-sm font-medium">{{ user.username }}</span>
+                            {{ (user.full_name or user.username)[0]|upper }}</div>
+                        <span class="text-sm font-medium">{{ user.full_name or user.username }}</span>
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                             </path>
@@ -56,9 +56,10 @@
                     <!-- Dropdown -->
                     <div
                         class="absolute right-0 mt-2 w-48 bg-[#121c32] rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100">
+                        <a href="/sessions"
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">WhatsApp Session</a>
                         <a href="/profile"
-                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security
-                            Settings</a>
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security Settings</a>
                         <form action="/auth/logout" method="POST" class="block w-full text-left">
                             <button type="submit"
                                 class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sign

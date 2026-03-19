@@ -1,4 +1,5 @@
 import os
+import logging
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
@@ -10,7 +11,7 @@ from app.queue_manager import SEND_QUEUE
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import HTMLResponse
 from app.database import engine, Base
-from app.routers import auth, mfa, oauth, users, admin
+from app.routers import auth, mfa, oauth, users, admin, sessions
 from app.auth import get_current_user, get_current_active_user_or_401
 from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
@@ -37,8 +38,73 @@ app.include_router(mfa.router)
 app.include_router(oauth.router)
 app.include_router(users.router)
 app.include_router(admin.router)
+app.include_router(sessions.router)
 
-# Custom 404 Handler for UI Request
+@app.on_event("startup")
+async def on_startup():
+    # Ensure database columns exist for new features
+    # This is a simple migration handle for SQLite without Alembic
+    from sqlalchemy import text
+    from app.database import SessionLocal
+    db = SessionLocal()
+    try:
+        # Check if columns exist
+        result = db.execute(text("PRAGMA table_info(users)"))
+        columns = [row[1] for row in result]
+        if "whatsapp_session_id" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN whatsapp_session_id VARCHAR"))
+            print("Added whatsapp_session_id column")
+        if "whatsapp_session_status" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN whatsapp_session_status VARCHAR DEFAULT 'disconnected'"))
+            print("Added whatsapp_session_status column")
+        
+        if "public_id" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN public_id VARCHAR(36)"))
+            print("Added public_id column")
+            
+        if "full_name" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN full_name VARCHAR"))
+            print("Added full_name column")
+
+        db.commit()
+
+        # Backfill UUIDs for existing users who don't have one
+        import uuid
+        users_without_uuid = db.execute(text("SELECT id FROM users WHERE public_id IS NULL")).fetchall()
+        for user_row in users_without_uuid:
+            new_uuid = str(uuid.uuid4())
+            db.execute(text("UPDATE users SET public_id = :uuid WHERE id = :id"), {"uuid": new_uuid, "id": user_row[0]})
+            print(f"Backfilled UUID {new_uuid} for user ID {user_row[0]}")
+        
+        if users_without_uuid:
+            db.commit()
+            print(f"Backfilled {len(users_without_uuid)} users with UUIDs")
+    except Exception as e:
+        print(f"Startup migration failed: {e}")
+    finally:
+        db.close()
+
+@app.get("/migrate")
+async def manual_migrate():
+    from sqlalchemy import text
+    from app.database import SessionLocal
+    db = SessionLocal()
+    try:
+        result = db.execute(text("PRAGMA table_info(users)"))
+        columns = [row[1] for row in result]
+        msg = f"Columns before: {columns}. "
+        if "whatsapp_session_id" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN whatsapp_session_id VARCHAR"))
+            msg += "Added whatsapp_session_id. "
+        if "whatsapp_session_status" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN whatsapp_session_status VARCHAR DEFAULT 'disconnected'"))
+            msg += "Added whatsapp_session_status. "
+        db.commit()
+        return {"status": "success", "message": msg}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+    finally:
+        db.close()
 @app.exception_handler(StarletteHTTPException)
 async def custom_exception_handler(request: Request, exc: StarletteHTTPException):
     from app.database import SessionLocal
@@ -106,6 +172,11 @@ async def dashboard_page(request: Request, user = Depends(get_current_active_use
     """The protected main broadcasting page."""
     return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
+@app.get("/sessions", response_class=HTMLResponse)
+async def sessions_page(request: Request, user = Depends(get_current_active_user_or_401)):
+    """The WhatsApp session management page."""
+    return templates.TemplateResponse("sessions.html", {"request": request, "user": user})
+
 @app.post("/send-campaign")
 async def handle_form(
     user = Depends(get_current_active_user_or_401),
@@ -136,7 +207,17 @@ async def handle_form(
     excel_file: UploadFile = File(...)
 ):
     try:
-        final_api_key = api_key if api_key and api_key.strip() else DEFAULT_API_KEY
+        # Priority: Form API Key > User's Session API Key > Master/Default API Key
+        final_api_key = api_key.strip() if api_key and api_key.strip() else None
+        
+        if not final_api_key:
+            if user.whatsapp_session_id and user.whatsapp_session_status == "connected" and user.custom_api_key:
+                final_api_key = user.custom_api_key
+                logging.info(f"Using user-specific session API key for {user.username}")
+            else:
+                final_api_key = DEFAULT_API_KEY
+                logging.info(f"Using default system API key for {user.username}")
+            
         if not final_api_key:
             return {"error": "No API Key provided. Set WASENDER_API_KEY in .env or provide it in the form."}
 
@@ -221,6 +302,7 @@ async def handle_form(
 
         return {"status": "success", "messages_queued": count, "contacts_reached": contacts_reached}
     except Exception as e:
+        logging.exception("Error during send-campaign")
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":

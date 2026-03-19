@@ -1,17 +1,24 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
+import uuid
 from app.database import Base
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
+    public_id = Column(String(36), unique=True, index=True, default=lambda: str(uuid.uuid4()))
     username = Column(String, unique=True, index=True)
+    full_name = Column(String, nullable=True)
     hashed_password = Column(String)
     role = Column(String, default="user") # 'admin' or 'user'
     is_active = Column(Boolean, default=True)
     custom_api_key = Column(String, nullable=True) # Optional per-user API key
+    
+    # WhatsApp Dynamic Sessions
+    whatsapp_session_id = Column(String, unique=True, index=True, nullable=True)
+    whatsapp_session_status = Column(String, default="disconnected") # disconnected, connecting, connected
     
     # MFA & OAuth Integrations
     mfa_secret = Column(String, nullable=True)
