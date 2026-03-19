@@ -42,7 +42,7 @@ class WasenderQueue:
         
         # Clean internal keys
         send_payload = {k: v for k, v in payload.items() if not k.startswith("_")}
-        logger.info("📤 Sending payload to API: %s", send_payload)
+        logger.info("[SEND] Sending payload to API: %s", send_payload)
         
         attempt = 0
         delay = 1.0
@@ -54,13 +54,13 @@ class WasenderQueue:
                 r = self.session.post(self.api_base, json=send_payload, headers=headers, timeout=15)
                 status = r.status_code
                 if status < 300:
-                    logger.info("✅ Message sent to %s (attempt %d).", payload.get("to"), attempt)
+                    logger.info("[SUCCESS] Message sent to %s (attempt %d).", payload.get("to"), attempt)
                     if self.pause_after_success:
                         time.sleep(self.pause_after_success)
                     return
                 
                 if status == 429:
-                    logger.warning("⚠️ Rate limited sending to %s. Retrying in %ds", payload.get("to"), int(delay))
+                    logger.warning("[RATE-LIMIT] Rate limited sending to %s. Retrying in %ds", payload.get("to"), int(delay))
                     time.sleep(delay)
                     delay = min(delay * 2, 30)
                     continue
@@ -78,7 +78,7 @@ class WasenderQueue:
                 time.sleep(delay)
                 delay = min(delay * 2, 30)
 
-        logger.error("❌ Giving up after %d attempts for %s", max_attempts, payload.get("to"))
+        logger.error("[FAILED] Giving up after %d attempts for %s", max_attempts, payload.get("to"))
 
 # Global instance
 SEND_QUEUE = WasenderQueue(api_base="https://www.wasenderapi.com", max_retries=5, pause_after_success=0.4)

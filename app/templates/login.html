@@ -34,9 +34,8 @@
             <p class="text-sm text-gray-400 mt-1">Sign in to continue to CBMS Pro</p>
         </div>
 
-        <div id="errorBanner"
-            class="hidden mb-6 bg-red-500/10 border border-red-500/30 text-red-400 text-sm p-3 rounded-lg text-center">
-            Login failed. Please check your credentials.
+        <div id="statusBanner"
+            class="hidden mb-6 p-3 rounded-lg text-sm text-center border">
         </div>
 
         <!-- Classic Login Form -->
@@ -134,9 +133,21 @@
     <script>
         const form = document.getElementById('loginForm');
         const submitBtn = document.getElementById('submitBtn');
-        const errorBanner = document.getElementById('errorBanner');
+        const statusBanner = document.getElementById('statusBanner');
         const mfaGroup = document.getElementById('mfaGroup');
         const mfaCodeInput = document.getElementById('mfa_code');
+
+        function showStatus(message, type = 'error') {
+            statusBanner.textContent = message;
+            statusBanner.classList.remove('hidden', 'bg-red-500/10', 'border-red-500/30', 'text-red-400', 'bg-blue-500/10', 'border-blue-500/30', 'text-blue-400');
+            
+            if (type === 'error') {
+                statusBanner.classList.add('bg-red-500/10', 'border-red-500/30', 'text-red-400');
+            } else {
+                statusBanner.classList.add('bg-blue-500/10', 'border-blue-500/30', 'text-blue-400');
+            }
+            statusBanner.classList.remove('hidden');
+        }
 
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('passwordInput');
@@ -154,7 +165,7 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            errorBanner.classList.add('hidden');
+            statusBanner.classList.add('hidden');
             const originalText = submitBtn.innerText;
             submitBtn.innerText = "Authenticating...";
             submitBtn.disabled = true;
@@ -175,17 +186,17 @@
                     // Reveal MFA input, lock username/password
                     mfaGroup.classList.remove('hidden');
                     mfaCodeInput.focus();
-                    errorBanner.textContent = "Multi-Factor Authentication required.";
-                    errorBanner.classList.remove('hidden');
+                    showStatus("Please enter your 6-digit MFA code below.", "info");
+                    submitBtn.innerText = "Verify MFA Code";
+                } else if (response.status === 401 && result.detail === "invalid_mfa") {
+                    showStatus("Invalid MFA code. Please try again.", "error");
                     submitBtn.innerText = "Verify MFA Code";
                 } else {
-                    errorBanner.textContent = result.detail || "Login failed.";
-                    errorBanner.classList.remove('hidden');
+                    showStatus(result.detail || "Login failed. Please check your credentials.", "error");
                     submitBtn.innerText = originalText;
                 }
             } catch (err) {
-                errorBanner.textContent = "Unable to connect to server. Please try again later.";
-                errorBanner.classList.remove('hidden');
+                showStatus("Unable to connect to server. Please try again later.", "error");
                 submitBtn.innerText = originalText;
             } finally {
                 submitBtn.disabled = false;

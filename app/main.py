@@ -1,5 +1,6 @@
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
@@ -18,6 +19,29 @@ from starlette.middleware.sessions import SessionMiddleware
 
 # Create all DB tables
 Base.metadata.create_all(bind=engine)
+
+# Configure Logging
+log_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+log_file = 'app.log'
+
+# File Handler with UTF-8 support
+file_handler = RotatingFileHandler(log_file, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8')
+file_handler.setFormatter(log_formatter)
+file_handler.setLevel(logging.INFO)
+
+# Stream Handler (Console) - Using a wrapper or just hoping for the best on modern terminals
+import sys
+stream_handler = logging.StreamHandler(sys.stdout)
+stream_handler.setFormatter(log_formatter)
+stream_handler.setLevel(logging.INFO)
+
+# Root Logger Config
+logging.basicConfig(
+    level=logging.INFO,
+    handlers=[file_handler, stream_handler]
+)
+
+logger = logging.getLogger(__name__)
 
 # Load environment variables for the default API Key
 load_dotenv()

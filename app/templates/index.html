@@ -8,6 +8,116 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <style>
+        #toast-container {
+            position: fixed !important;
+            top: 24px !important;
+            right: 24px !important;
+            z-index: 10000 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            pointer-events: none !important;
+        }
+
+        .toast {
+            pointer-events: auto !important;
+            min-width: 320px !important;
+            max-width: 420px !important;
+            padding: 12px !important;
+            border-radius: 20px !important;
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6) !important;
+            color: white !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transform: translateX(120%) scale(0.9) !important;
+            opacity: 0 !important;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        .toast.show {
+            transform: translateX(0) scale(1) !important;
+            opacity: 1 !important;
+        }
+
+        .toast-icon-container {
+            padding: 10px !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        .toast-success .toast-icon-container {
+            background: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+        }
+
+        .toast-error .toast-icon-container {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: #f87171 !important;
+        }
+
+        .toast-info .toast-icon-container {
+            background: rgba(59, 130, 246, 0.2) !important;
+            color: #60a5fa !important;
+        }
+
+        .toast-content {
+            flex: 1 !important;
+            padding: 6px 4px 6px 0 !important;
+        }
+
+        .toast-title {
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            color: #f8fafc !important;
+            margin-bottom: 2px !important;
+            display: block !important;
+        }
+
+        .toast-message {
+            font-size: 0.85rem !important;
+            color: #cbd5e1 !important;
+            line-height: 1.4 !important;
+            display: block !important;
+        }
+
+        .toast-progress {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            height: 3px !important;
+            background: #3b82f6 !important;
+            width: 100% !important;
+            transform-origin: left !important;
+            animation: toastProgress 5s linear forwards !important;
+        }
+
+        .toast-success .toast-progress { background: #10b981 !important; }
+        .toast-error .toast-progress { background: #ef4444 !important; }
+
+        @keyframes toastProgress {
+            from { transform: scaleX(1); }
+            to { transform: scaleX(0); }
+        }
+
+        @keyframes toastSlideOut {
+            to { transform: translateX(120%) scale(0.9); opacity: 0; }
+        }
+
+        .toast.hiding {
+            animation: toastSlideOut 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
@@ -17,6 +127,7 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]">
         </div>
     </div>
+    
 
     <!-- Navigation -->
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
@@ -384,6 +495,48 @@
         const errorText = document.getElementById('errorText');
         const chatPreviewArea = document.getElementById('chatPreviewArea');
 
+        // Toast Helper
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            
+            const icons = {
+                success: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+                error: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
+                info: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon-container">
+                    ${icons[type]}
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-progress"></div>
+            `;
+
+            container.appendChild(toast);
+            
+            // Force reflow
+            toast.offsetHeight;
+            toast.classList.add('show');
+
+            const removeToast = () => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 500);
+            };
+
+            const autoTimeout = setTimeout(removeToast, 5000);
+            
+            toast.onclick = () => {
+                clearTimeout(autoTimeout);
+                removeToast();
+            };
+        }
+
         // Eye Toggle Logic
         const apiKeyInput = document.getElementById('apiKeyInput');
         const toggleApiKey = document.getElementById('toggleApiKey');
@@ -631,24 +784,21 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    successTitle.textContent = `🚀 Campaign Launched!`;
-                    successDetail.innerHTML = `<strong>${result.messages_queued}</strong> messages queued for <strong>${result.contacts_reached}</strong> contacts.`;
-                    successBanner.classList.remove('hidden');
-                    form.reset();
-                    fileDisplay.textContent = "Drag and drop or click to browse (Must contain 'Phone' column)";
-                    fileDisplay.classList.remove('text-blue-400');
-                    fileDisplay.classList.add('text-gray-400');
-                    // Reset to text view
-                    selectedSequence = [];
-                    document.querySelectorAll('.type-btn.active').forEach(b => b.classList.remove('active'));
-                    document.querySelector('[data-type="text"]').click();
+                    showToast('Campaign Launched!', `${result.messages_queued} messages queued for ${result.contacts_reached} contacts.`, 'success');
+                    
+                    // User requested to stop clearing/refreshing form
+                    // form.reset(); 
+                    // fileDisplay.textContent = "Drag and drop or click to browse (Must contain 'Phone' column)";
+                    // fileDisplay.classList.remove('text-blue-400');
+                    // fileDisplay.classList.add('text-gray-400');
+                    
+                    // We also don't reset selectedSequence if the user wants to keep the type configuration
                 } else {
-                    errorText.textContent = result.error || result.detail || 'An unknown error occurred';
-                    errorBanner.classList.remove('hidden');
+                    const errMsg = result.error || result.detail || 'An unknown error occurred';
+                    showToast('Submission Failed', errMsg, 'error');
                 }
             } catch (err) {
-                errorText.textContent = 'Network error. Please try again.';
-                errorBanner.classList.remove('hidden');
+                showToast('Network Error', 'Check your connection and try again.', 'error');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `
@@ -661,6 +811,7 @@
             }
         });
     </script>
+    <div id="toast-container"></div>
 </body>
 
 </html>
