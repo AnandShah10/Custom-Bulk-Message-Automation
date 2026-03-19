@@ -481,9 +481,17 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Options <span class="text-xs text-gray-500">(one per line)</span></label>
-                        <textarea name="poll_options" rows="4" placeholder="Red&#10;Blue&#10;Green"
-                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                        <div class="flex items-center justify-between mb-3">
+                            <label class="text-sm font-medium text-gray-300">Options <span class="text-xs text-gray-500">(max 12)</span></label>
+                            <button type="button" id="addPollOption"
+                                class="flex items-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                Add Option
+                            </button>
+                        </div>
+                        <div id="pollOptionsList" class="space-y-2"></div>
+                        <!-- Hidden textarea synced for backend compatibility -->
+                        <textarea name="poll_options" id="pollOptionsHidden" class="hidden"></textarea>
                     </div>
                     <div class="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
                         <input type="checkbox" name="poll_multi_select" id="pollMultiSelect"
@@ -491,6 +499,7 @@
                         <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow Multiple Selections</label>
                     </div>
                 </div>
+
 
                 <!-- Submit Button -->
                 <div class="pt-4">
@@ -632,7 +641,7 @@
         const stiUrl = document.querySelector('input[name="sticker_url"]');
         const docName = document.querySelector('input[name="document_name"]');
         const pollQ = document.querySelector('input[name="poll_question"]');
-        const pollO = document.querySelector('textarea[name="poll_options"]');
+        const pollO = document.getElementById('pollOptionsHidden');
         const pollM = document.querySelector('input[name="poll_multi_select"]');
         const locName = document.querySelector('input[name="location_name"]');
         const locAddress = document.querySelector('input[name="location_address"]');
@@ -653,6 +662,52 @@
                 fileDisplay.classList.remove('text-gray-400');
             }
         });
+
+        // ===== Dynamic Poll Options Builder =====
+        const pollOptionsList = document.getElementById('pollOptionsList');
+        const addPollOptionBtn = document.getElementById('addPollOption');
+        const pollOptionsHidden = document.getElementById('pollOptionsHidden');
+
+        function syncPollOptions() {
+            const inputs = pollOptionsList.querySelectorAll('input[type="text"]');
+            pollOptionsHidden.value = [...inputs].map(i => i.value).join('\n');
+            // Dispatch a change event so the debounced preview listener picks it up
+            pollOptionsHidden.dispatchEvent(new Event('change'));
+        }
+
+        function addPollOptionRow(value = '') {
+            const count = pollOptionsList.querySelectorAll('.poll-option-row').length;
+            if (count >= 12) return;
+
+            const row = document.createElement('div');
+            row.className = 'poll-option-row flex items-center gap-2';
+            row.innerHTML = `
+                <span class="text-xs text-gray-500 font-mono w-5 text-center flex-shrink-0">${count + 1}</span>
+                <input type="text" placeholder="Option ${count + 1}" value="${value}"
+                    class="flex-1 custom-input bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                <button type="button" class="poll-remove-btn w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 flex items-center justify-center flex-shrink-0 transition-all">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            `;
+
+            row.querySelector('input').addEventListener('keyup', syncPollOptions);
+            row.querySelector('.poll-remove-btn').addEventListener('click', () => {
+                row.remove();
+                // Re-number remaining rows
+                pollOptionsList.querySelectorAll('.poll-option-row').forEach((r, i) => {
+                    r.querySelector('span').textContent = i + 1;
+                    r.querySelector('input').placeholder = `Option ${i + 1}`;
+                });
+                syncPollOptions();
+            });
+
+            pollOptionsList.appendChild(row);
+            syncPollOptions();
+        }
+
+        addPollOptionBtn.addEventListener('click', () => addPollOptionRow());
+
+        // NOTE: Default poll rows are seeded AFTER debouncedUpdatePreview is defined (below)
 
         // Toggle array logic
         btnSelectors.forEach(btn => {
@@ -853,6 +908,10 @@
         }
 
         const debouncedUpdatePreview = debounce(updatePreview, 1000);
+
+        // Seed poll options here — AFTER debouncedUpdatePreview is defined so no TDZ crash
+        addPollOptionRow('Option 1');
+        addPollOptionRow('Option 2');
 
         // Bind form inputs to update preview
         [msgText, imgCap, vidCap, docCap, locCap, audio_text, sticker_text, imgUrl, vidUrl, audioUrl, docUrl, stiUrl, docName, pollQ, pollO, pollM, locName, locAddress, conName, conPhone, latitude, longitude].forEach(input => {
