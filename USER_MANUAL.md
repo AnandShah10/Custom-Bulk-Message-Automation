@@ -1,20 +1,44 @@
 # CBMS Pro - User Manual
 
-Welcome to the comprehensive guide for using CBMS Pro. This manual covers how to format your Excel files, configure your environment, and use the user-interface.
+Welcome to the comprehensive guide for using CBMS Pro. This manual covers how to format your Excel files, connect your WhatsApp session, manage your profile, and launch campaigns.
 
 ## 1. Setting up your Environment
 
 ### The `.env` File
-You can set up a default API Key so that you do not have to copy and paste it every time you launch a campaign.
+You can set up a default configuration so that the system works seamlessly for all users.
 1. Locate the file named `.env` in the main folder.
 2. Open it in a text editor (like Notepad).
-3. Ensure it has the following format containing your WaSender API key:
-   ```env
-   WASENDER_API_KEY=your_api_key_here
-   ```
-   > **Note:** If this is filled out, you can leave the "WASender API Key" text box *blank* in your web dashboard.
+3. Ensure it contains the following keys:
+   - `WASENDER_PERSONAL_TOKEN`: Required for managing dynamic sessions.
+   - `WASENDER_API_KEY`: Default fallback key for messaging.
+   - `JWT_SECRET_KEY`: Secure string for session management.
+   - `BASE_URL`: The URL where your app is hosted (e.g., `http://localhost:8000`).
 
-## 2. Formatting your Excel File
+## 2. WhatsApp Session Management
+
+CBMS Pro allows you to connect your own WhatsApp number to send messages.
+
+1. Click on your user icon in the top-right corner.
+2. Select **WhatsApp Session**.
+3. Enter your phone number (with country code) and click **Connect WhatsApp**.
+4. Scan the generated QR code with your WhatsApp mobile app (Linked Devices).
+5. Once "Connected" appears, the system will automatically use your session to send messages.
+
+## 3. User Profile & Security
+
+Customize your account and secure it with modern tools.
+
+### Profile Customization
+- Go to **Security Settings** from the user menu.
+- Update your **Full Name** to personalize your dashboard experience.
+- Your unique **Public ID (UUID)** is displayed here for reference.
+
+### Two-Factor Authentication (MFA)
+- In **Security Settings**, click "Set up MFA Now".
+- Scan the QR code with an authenticator app (Authy, Google Authenticator).
+- Enter the 6-digit code to enable MFA. You will be prompted for this code on every login.
+
+## 4. Formatting your Excel File
 
 The application expects an Excel file (`.xlsx`) containing the contacts you want to message, along with any personalized data variables.
 
