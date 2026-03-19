@@ -301,64 +301,136 @@
                     </div>
                 </div>
 
-                <!-- Image URL -->
-                <div class="input-group dynamic-field hidden" data-shows="image">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Image URL <span
-                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
-                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Video URL -->
-                <div class="input-group dynamic-field hidden" data-shows="video">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Video URL <span
-                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
-                    <input type="url" name="video_url" placeholder="https://example.com/video.mp4"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Audio URL -->
-                <div class="input-group dynamic-field hidden" data-shows="audio">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio URL <span
-                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
-                    <input type="url" name="audio_url" placeholder="https://example.com/audio.mp3"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Document URL -->
-                <div class="input-group dynamic-field hidden" data-shows="document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Document URL <span
-                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
-                    <input type="url" name="document_url" placeholder="https://example.com/file.pdf"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Sticker URL -->
-                <div class="input-group dynamic-field hidden" data-shows="sticker">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL <span
-                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
-                    <input type="url" name="sticker_url" placeholder="https://example.com/sticker.webp"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Document Name (For Document) -->
-                <div class="input-group dynamic-field hidden" data-shows="document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Document Name (with extension)</label>
-                    <input type="text" name="document_name" placeholder="Invoice.pdf"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                </div>
-
-                <!-- Location Fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 dynamic-field hidden" data-shows="location">
+                <!-- ===== TEXT MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="text">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">📝</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Text Message</h4>
+                    </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Latitude</label>
-                        <input type="number" step="any" name="latitude" placeholder="e.g. 37.7749"
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Message Content <span class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports {Name}</span></label>
+                        <textarea name="text_message" rows="4" placeholder="Hello {Name}, how are you today?"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== IMAGE MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="image">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">🖼️</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Image Message</h4>
+                        <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                        <input type="url" name="image_url" placeholder="https://example.com/image.jpg"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Longitude</label>
-                        <input type="number" step="any" name="longitude" placeholder="e.g. -122.4194"
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="image_caption" rows="2" placeholder="Look at this amazing image, {Name}!"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== VIDEO MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="video">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">🎥</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Video Message</h4>
+                        <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Video URL</label>
+                        <input type="url" name="video_url" placeholder="https://example.com/video.mp4"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="video_caption" rows="2" placeholder="Watch this new video!"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== AUDIO MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="audio">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">🎵</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Audio Message</h4>
+                        <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Audio URL</label>
+                        <input type="url" name="audio_url" placeholder="https://example.com/audio.mp3"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="audio_text" rows="2" placeholder="Listen to this audio!"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== DOCUMENT MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="document">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">📄</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Document Message</h4>
+                        <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Document URL</label>
+                        <input type="url" name="document_url" placeholder="https://example.com/file.pdf"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Document Name <span class="text-xs text-gray-500">(with extension)</span></label>
+                        <input type="text" name="document_name" placeholder="Invoice.pdf"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="document_caption" rows="2" placeholder="Attached is your requested document."
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== STICKER MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="sticker">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">✨</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Sticker Message</h4>
+                        <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL <span class="text-xs text-gray-500">(.webp or .gif)</span></label>
+                        <input type="url" name="sticker_url" placeholder="https://example.com/sticker.webp"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                    </div>
+                    <div class="input-group">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Text <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="sticker_text" rows="2" placeholder="Check out this sticker!"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
+                    </div>
+                </div>
+
+                <!-- ===== LOCATION MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="location">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">📍</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Location Message</h4>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Latitude</label>
+                            <input type="number" step="any" name="latitude" placeholder="e.g. 37.7749"
+                                class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Longitude</label>
+                            <input type="number" step="any" name="longitude" placeholder="e.g. -122.4194"
+                                class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
                     </div>
                     <div class="input-group">
                         <label class="block text-sm font-medium text-gray-300 mb-2">Location Name</label>
@@ -366,89 +438,58 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Location Address</label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Address <span class="text-xs text-gray-500">(optional)</span></label>
                         <input type="text" name="location_address" placeholder="e.g. 123 Main St"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
-                </div>
-
-                <!-- Contact Fields -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 dynamic-field hidden" data-shows="contact">
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Contact Name</label>
-                        <input type="text" name="contact_name" placeholder="John Doe"
-                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
-                    </div>
-                    <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Contact Phone</label>
-                        <input type="text" name="contact_phone" placeholder="+1234567890"
-                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span class="text-xs text-gray-500">(optional)</span></label>
+                        <textarea name="location_caption" rows="2" placeholder="Here is our headquarters."
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
-                <!-- Poll Fields -->
-                <div class="space-y-6 dynamic-field hidden" data-shows="poll">
+                <!-- ===== CONTACT MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="contact">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">👤</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Contact Card</h4>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Contact Name</label>
+                            <input type="text" name="contact_name" placeholder="John Doe"
+                                class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
+                        <div class="input-group">
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+                            <input type="text" name="contact_phone" placeholder="+1234567890"
+                                class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== POLL MESSAGE BLOCK ===== -->
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="poll">
+                    <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
+                        <span class="text-lg">📊</span>
+                        <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Live Poll</h4>
+                    </div>
                     <div class="input-group">
                         <label class="block text-sm font-medium text-gray-300 mb-2">Poll Question</label>
                         <input type="text" name="poll_question" placeholder="Which color do you like?"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Poll Options (One per line)</label>
-                        <textarea name="poll_options" rows="4" placeholder="Red\nBlue\nGreen"
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Options <span class="text-xs text-gray-500">(one per line)</span></label>
+                        <textarea name="poll_options" rows="4" placeholder="Red&#10;Blue&#10;Green"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                     <div class="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
                         <input type="checkbox" name="poll_multi_select" id="pollMultiSelect"
                             class="w-5 h-5 rounded border-white/20 bg-black/20 text-blue-500 focus:ring-blue-500/50">
-                        <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow
-                            Multiple Selections</label>
+                        <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow Multiple Selections</label>
                     </div>
-                </div>
-
-                <!-- Message/Caption Fields (Isolated by Type) -->
-                <div class="input-group dynamic-field hidden" data-shows="text">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Text Content <span
-                            class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports
-                            variables {Name}</span></label>
-                    <textarea name="text_message" rows="4" placeholder="Hello {Name}, how are you today?"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="image">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Image Caption</label>
-                    <textarea name="image_caption" rows="2" placeholder="Look at this amazing image, {Name}!"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="video">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Video Caption</label>
-                    <textarea name="video_caption" rows="2" placeholder="Watch this new video!"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Document Caption</label>
-                    <textarea name="document_caption" rows="2" placeholder="Attached is your requested document."
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="audio">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio Caption / Text</label>
-                    <textarea name="audio_text" rows="2" placeholder="Listen to this audio!"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="sticker">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker Caption / Text</label>
-                    <textarea name="sticker_text" rows="2" placeholder="Check out this sticker!"
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
-                </div>
-
-                <div class="input-group dynamic-field hidden" data-shows="location">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Location Caption / Note</label>
-                    <textarea name="location_caption" rows="2" placeholder="Here is our headquarters."
-                        class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                 </div>
 
                 <!-- Submit Button -->
