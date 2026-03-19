@@ -109,11 +109,17 @@ async def request_password_reset(
         user.reset_token_expiry = datetime.utcnow() + timedelta(hours=1)
         db.commit()
         
-        # In a real app, send an email. Here we log it.
+        # Send real email
         reset_link = f"{base_url}/reset-password/{token}"
-        print(f"DEBUG: Password reset link for {email}: {reset_link}")
+        try:
+            from app.email_utils import send_password_reset_email
+            await send_password_reset_email(email, reset_link)
+            details = f"Reset link sent to {email}"
+        except Exception as e:
+            details = f"Failed to send reset link to {email}: {str(e)}"
+            print(f"DEBUG Error sending email: {e}")
         
-        log = SystemLog(user_id=user.id, action="PASSWORD_RESET_REQUEST", details=f"Reset link generated: {reset_link}")
+        log = SystemLog(user_id=user.id, action="PASSWORD_RESET_REQUEST", details=details)
         db.add(log)
         db.commit()
     

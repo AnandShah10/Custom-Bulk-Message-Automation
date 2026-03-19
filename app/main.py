@@ -13,6 +13,7 @@ from app.database import engine, Base
 from app.routers import auth, mfa, oauth, users, admin
 from app.auth import get_current_user, get_current_active_user_or_401
 from starlette.responses import RedirectResponse
+from starlette.middleware.sessions import SessionMiddleware
 
 # Create all DB tables
 Base.metadata.create_all(bind=engine)
@@ -22,6 +23,10 @@ load_dotenv()
 DEFAULT_API_KEY = os.getenv("WASENDER_API_KEY", "")
 
 app = FastAPI(title="CBMS Pro API")
+
+# Add SessionMiddleware (required for OAuth state management)
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "development-secret-key")
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
 
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
