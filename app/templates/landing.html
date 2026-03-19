@@ -18,15 +18,15 @@
     <!-- Navigation -->
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+            <a href="/" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
                 </div>
-                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
-            </div>
-            <div class="flex items-center gap-4">
-                <a href="/login" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">Sign In</a>
-                <a href="/signup" class="text-sm font-medium bg-white/10 hover:bg-white/20 border border-white/10 px-4 py-2 rounded-lg transition-colors">Get Started</a>
+                <span class="font-bold text-2xl tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+            </a>
+            <div class="flex items-center gap-6">
+                <a href="/login" class="text-sm font-semibold text-gray-300 hover:text-white transition-colors">Sign In</a>
+                <a href="/signup" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-lg shadow-blue-500/25">Get Started</a>
             </div>
         </div>
     </nav>
@@ -46,33 +46,53 @@
             The ultimate customized bulk messaging system. Engage your audience with personalized text, media, documents, and locations at scale.
         </p>
         
-        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-md">
-            <a href="/signup" class="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-4 px-8 rounded-xl shadow-lg shadow-blue-500/30 transition-all hover:scale-105 hover:shadow-blue-500/50 flex-1">
+        <div class="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-lg">
+            <a href="/signup" class="px-8 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-2xl shadow-2xl shadow-blue-500/40 transition-all hover:scale-105 flex items-center justify-center gap-2 group">
                 Start Free Trial
+                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </a>
-            <a href="/login" class="glass-panel hover:bg-white/5 text-white font-bold py-4 px-8 rounded-xl transition-all border border-white/10 flex-1">
-                Dashboard Login
+            <a href="/login" class="px-8 py-5 glass-panel bg-white/5 hover:bg-white/10 text-white font-bold rounded-2xl border border-white/10 transition-all hover:scale-105 flex items-center justify-center">
+                User Dashboard
             </a>
         </div>
         
+        <!-- Live Stats / Trust Bar -->
+        <div class="mt-20 flex flex-wrap justify-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+            <div class="flex items-center gap-2 font-bold text-xl">🛡️ WebAuthn Ready</div>
+            <div class="flex items-center gap-2 font-bold text-xl">🚀 Real-time Sync</div>
+            <div class="flex items-center gap-2 font-bold text-xl">✨ Enterprise Grade</div>
+        </div>
+
         <!-- Feature Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24 text-left max-w-5xl">
-            <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                <div class="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-2xl mb-4">⚡</div>
-                <h3 class="text-xl font-bold mb-2">Dynamic Sequencing</h3>
-                <p class="text-gray-400 text-sm">Send a contact card, then an image, followed by text. Control the exact flow of your broadcast autonomously.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-32 text-left max-w-6xl">
+            <div class="glass-panel p-8 rounded-[2rem] border border-white/10 hover:border-blue-500/30 transition-colors group">
+                <div class="w-14 h-14 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">⚡</div>
+                <h3 class="text-2xl font-bold mb-3">WhatsApp Automation</h3>
+                <p class="text-gray-400 leading-relaxed">Dynamic sequencing and live session management. Connect your own WhatsApp API and broadcast with precision-controlled flows.</p>
             </div>
-            <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                <div class="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-2xl mb-4">📱</div>
-                <h3 class="text-xl font-bold mb-2">Live Canvas Preview</h3>
-                <p class="text-gray-400 text-sm">See exactly how your messages will render on WhatsApp in real-time as you build your campaign.</p>
+            <div class="glass-panel p-8 rounded-[2rem] border border-white/10 hover:border-purple-500/30 transition-colors group">
+                <div class="w-14 h-14 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">🔐</div>
+                <h3 class="text-2xl font-bold mb-3">Multimodal MFA</h3>
+                <p class="text-gray-400 leading-relaxed">Secure your empire with **Passkeys (WebAuthn)**, Authenticator Apps, or Email OTP. Biometric security of the future, available today.</p>
             </div>
-            <div class="glass-panel p-6 rounded-2xl border border-white/10">
-                <div class="w-12 h-12 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-2xl mb-4">🛡️</div>
-                <h3 class="text-xl font-bold mb-2">Enterprise Security</h3>
-                <p class="text-gray-400 text-sm">Secured by JWT HttpOnly cookies, Bcrypt hashing, and optional Google Authenticator Two-Factor (MFA).</p>
+            <div class="glass-panel p-8 rounded-[2rem] border border-white/10 hover:border-emerald-500/30 transition-colors group">
+                <div class="w-14 h-14 bg-emerald-500/20 text-emerald-400 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">📊</div>
+                <h3 class="text-2xl font-bold mb-3">Admin Oversight</h3>
+                <p class="text-gray-400 leading-relaxed">Scalable management with real-time search, server-side pagination, and live audit logs. Monitor every connection with enterprise visibility.</p>
             </div>
         </div>
+
+        <!-- CTAs / Social Proof -->
+        <div class="mt-32 w-full max-w-4xl glass-panel p-12 rounded-[2.5rem] border border-white/10 relative overflow-hidden text-center">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600/10 blur-[100px] -z-10"></div>
+            <h2 class="text-3xl md:text-5xl font-bold mb-6">Ready to scale your communications?</h2>
+            <p class="text-gray-400 mb-10 max-w-2xl mx-auto">Join the next generation of intelligent broadcasting. Secure, scalable, and built for performance.</p>
+            <a href="/signup" class="inline-block bg-white text-gray-900 font-bold px-10 py-4 rounded-xl hover:bg-gray-200 transition-colors shadow-xl">Create Your Account</a>
+        </div>
     </main>
+
+    <footer class="container mx-auto px-6 py-12 border-t border-white/5 mt-20 text-center">
+        <p class="text-gray-500 text-sm">© 2026 CBMS Pro. Pioneering Professional Broadcasting. All rights reserved.</p>
+    </footer>
 </body>
 </html>
