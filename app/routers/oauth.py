@@ -40,7 +40,7 @@ oauth.register(
 async def login_google(request: Request):
     """Redirects the user to Google's consent screen."""
     redirect_uri = request.url_for('auth_google_callback')
-    return await oauth.google.authorize_redirect(request, redirect_uri)
+    return await oauth.google.authorize_redirect(request, redirect_uri, prompt='select_account')
 
 @router.get("/auth/google/callback")
 async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
@@ -96,7 +96,7 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
 async def login_microsoft(request: Request):
     """Redirects the user to Microsoft's consent screen."""
     redirect_uri = request.url_for('auth_microsoft_callback')
-    return await oauth.microsoft.authorize_redirect(request, redirect_uri)
+    return await oauth.microsoft.authorize_redirect(request, redirect_uri, prompt='select_account')
 
 @router.get("/auth/microsoft/callback")
 async def auth_microsoft_callback(request: Request, db: Session = Depends(get_db)):
