@@ -14,33 +14,78 @@ def check_admin(user: User = Depends(get_current_active_user_or_401)):
         raise HTTPException(status_code=403, detail="Not authorized mapping: Admin privileges required")
     return user
 
+from sqlalchemy import or_
+
 @router.get("/admin", response_class=HTMLResponse)
-async def admin_dashboard(request: Request, user: User = Depends(check_admin), db: Session = Depends(get_db)):
-    """Serve the Admin HTML Interface."""
-    # Get high-level stats
-    total_users = db.query(User).count()
-    active_users = db.query(User).filter(User.is_active == True).count()
-    users_with_mfa = db.query(User).filter(User.mfa_enabled == True).count()
+async def admin_dashboard(
+    request: Request, 
+    user_page: int = 1, 
+    log_page: int = 1, 
+    user_query: str = "", 
+    log_query: str = "",
+    user: User = Depends(check_admin), 
+    db: Session = Depends(get_db)
+):
+    """Serve the Admin HTML Interface with Search & Pagination."""
+    USER_LIMIT = 10
+    LOG_LIMIT = 20
+
+    # High-level stats (global)
+    total_users_count = db.query(User).count()
+    active_users_count = db.query(User).filter(User.is_active == True).count()
+    users_with_mfa_count = db.query(User).filter(User.mfa_enabled == True).count()
     
-    # Get users list
-    all_users = db.query(User).order_by(User.id.desc()).all()
+    # 1. Users Query with Search & Pagination
+    user_base = db.query(User)
+    if user_query:
+        user_base = user_base.filter(
+            or_(
+                User.username.ilike(f"%{user_query}%"),
+                User.full_name.ilike(f"%{user_query}%"),
+                User.public_id.ilike(f"%{user_query}%")
+            )
+        )
     
-    # Get latest logs
-    recent_logs = db.query(SystemLog).order_by(SystemLog.created_at.desc()).limit(50).all()
+    total_filtered_users = user_base.count()
+    user_total_pages = (total_filtered_users + USER_LIMIT - 1) // USER_LIMIT
+    all_users = user_base.order_by(User.id.desc()).offset((user_page - 1) * USER_LIMIT).limit(USER_LIMIT).all()
+    
+    # 2. Logs Query with Search & Pagination
+    log_base = db.query(SystemLog)
+    if log_query:
+        log_base = log_base.filter(
+            or_(
+                SystemLog.action.ilike(f"%{log_query}%"),
+                SystemLog.details.ilike(f"%{log_query}%")
+            )
+        )
+    
+    total_filtered_logs = log_base.count()
+    log_total_pages = (total_filtered_logs + LOG_LIMIT - 1) // LOG_LIMIT
+    recent_logs = log_base.order_by(SystemLog.created_at.desc()).offset((log_page - 1) * LOG_LIMIT).limit(LOG_LIMIT).all()
     
     # Resolve usernames for logs
-    user_dict = {u.id: u.username for u in all_users}
+    log_user_ids = {log.user_id for log in recent_logs if log.user_id}
+    involved_users = db.query(User.id, User.username).filter(User.id.in_(log_user_ids)).all()
+    user_dict = {u.id: u.username for u in involved_users}
+    
     for log in recent_logs:
-        log.username = user_dict.get(log.user_id, "Unknown System")
+        log.username = user_dict.get(log.user_id, "System")
 
     return templates.TemplateResponse("admin.html", {
         "request": request,
         "user": user,
-        "total_users": total_users,
-        "active_users": active_users,
-        "users_with_mfa": users_with_mfa,
+        "total_users": total_users_count,
+        "active_users": active_users_count,
+        "users_with_mfa": users_with_mfa_count,
         "all_users": all_users,
-        "recent_logs": recent_logs
+        "recent_logs": recent_logs,
+        "user_page": user_page,
+        "user_total_pages": user_total_pages,
+        "user_query": user_query,
+        "log_page": log_page,
+        "log_total_pages": log_total_pages,
+        "log_query": log_query
     })
 
 @router.post("/admin/users/{user_id}/toggle-status")

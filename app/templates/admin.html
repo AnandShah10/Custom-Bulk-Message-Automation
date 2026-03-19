@@ -19,11 +19,9 @@
     <!-- Navigation -->
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <span
-                    class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-400">ADMIN
-                    OPS</span>
-            </div>
+            <a href="/dashboard" class="flex items-center gap-2 group">
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-red-400 to-orange-400 group-hover:from-red-300 group-hover:to-orange-300 transition-all">ADMIN OPS</span>
+            </a>
             <div class="flex items-center gap-4">
                 <a href="/dashboard" class="text-sm font-medium text-gray-300 hover:text-white transition-colors">← Exit
                     Admin Mode</a>
@@ -59,16 +57,23 @@
 
             <!-- Users Table -->
             <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10 overflow-hidden">
-                <h3 class="text-xl font-bold mb-4">User Master List</h3>
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <h3 class="text-xl font-bold">User Master List</h3>
+                    <div class="relative w-full md:w-72">
+                        <input type="text" id="userSearch" value="{{ user_query }}" placeholder="Search name, email, uuid..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                        <svg class="absolute right-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="text-gray-400 text-sm border-b border-white/10">
-                                <th class="pb-3 font-medium">ID</th>
-                                <th class="pb-3 font-medium">Username</th>
+                                <th class="pb-3 font-medium">User Identity</th>
                                 <th class="pb-3 font-medium">Role</th>
                                 <th class="pb-3 font-medium">Joined</th>
-                                <th class="pb-3 font-medium">MFA</th>
+                                <th class="pb-3 font-medium">MFA Security</th>
+                                <th class="pb-3 font-medium">WhatsApp</th>
                                 <th class="pb-3 font-medium">Status</th>
                                 <th class="pb-3 font-medium text-right">Actions</th>
                             </tr>
@@ -76,31 +81,51 @@
                         <tbody class="text-sm">
                             {% for u in all_users %}
                             <tr class="border-b border-white/5 hover:bg-white/5 transition-colors">
-                                <td class="py-3 text-gray-500">#{{ u.id }}</td>
-                                <td class="py-3 font-medium">{{ u.username }}</td>
-                                <td class="py-3">
+                                <td class="py-4">
+                                    <div class="flex flex-col">
+                                        <span class="font-bold text-gray-200">{{ u.username }}</span>
+                                        <span class="text-[11px] text-gray-400 font-medium">{{ u.full_name or 'No Name Set' }}</span>
+                                        <span class="text-[10px] text-gray-500 font-mono mt-1 uppercase tracking-tighter">{{ u.public_id }}</span>
+                                    </div>
+                                </td>
+                                <td class="py-4">
                                     {% if u.role == 'admin' %}
-                                    <span
-                                        class="bg-red-500/20 text-red-400 px-2 py-1 rounded text-xs font-bold">ADMIN</span>
+                                    <span class="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded text-[10px] font-bold">ADMIN</span>
                                     {% else %}
-                                    <span
-                                        class="bg-blue-500/20 text-blue-400 px-2 py-1 rounded text-xs font-bold">USER</span>
+                                    <span class="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2 py-0.5 rounded text-[10px] font-bold">USER</span>
                                     {% endif %}
                                 </td>
-                                <td class="py-3 text-gray-400">{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else
-                                    'N/A' }}</td>
-                                <td class="py-3">
+                                <td class="py-4 text-gray-500 text-xs">{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else 'N/A' }}</td>
+                                <td class="py-4">
                                     {% if u.mfa_enabled %}
-                                    <span class="text-green-400">Yes</span>
+                                    <div class="flex flex-col gap-1">
+                                        <span class="text-green-400 text-xs font-bold flex items-center gap-1">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Enabled
+                                        </span>
+                                        <span class="text-[10px] text-gray-500 uppercase font-mono tracking-wider">{{ u.mfa_type }}</span>
+                                    </div>
                                     {% else %}
-                                    <span class="text-gray-500">No</span>
+                                    <span class="text-gray-600 text-xs">Disabled</span>
                                     {% endif %}
                                 </td>
-                                <td class="py-3">
-                                    {% if u.is_active %}
-                                    <span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span> Active
+                                <td class="py-4">
+                                    {% if u.whatsapp_session_status == 'connected' %}
+                                    <span class="text-xs text-green-400 font-bold flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Connected
+                                    </span>
+                                    {% elif u.whatsapp_session_status == 'connecting' %}
+                                    <span class="text-xs text-yellow-400 font-bold flex items-center gap-1">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span> Connecting
+                                    </span>
                                     {% else %}
-                                    <span class="w-2 h-2 rounded-full bg-red-500 inline-block mr-1"></span> Disabled
+                                    <span class="text-xs text-gray-600">Disconnected</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-4">
+                                    {% if u.is_active %}
+                                    <span class="text-xs text-green-500/80 font-medium">Active</span>
+                                    {% else %}
+                                    <span class="text-xs text-red-500/80 font-medium">Banned</span>
                                     {% endif %}
                                 </td>
                                 <td class="py-3 text-right space-x-2">
@@ -118,11 +143,28 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- User Pagination -->
+                <div class="mt-6 flex items-center justify-between border-t border-white/5 pt-6">
+                    <p class="text-xs text-gray-500">Page {{ user_page }} of {{ user_total_pages or 1 }}</p>
+                    <div class="flex gap-2">
+                        <button onclick="changePage('user', {{ user_page - 1 }})" {{ 'disabled' if user_page <= 1 }}
+                            class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Previous</button>
+                        <button onclick="changePage('user', {{ user_page + 1 }})" {{ 'disabled' if user_page >= user_total_pages }}
+                            class="px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-xs font-medium hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Next</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Audit Logs Table -->
             <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10 overflow-hidden">
-                <h3 class="text-xl font-bold mb-4">Live System Logs</h3>
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+                    <h3 class="text-xl font-bold">Live System Logs</h3>
+                    <div class="relative w-full md:w-72">
+                        <input type="text" id="logSearch" value="{{ log_query }}" placeholder="Search actions, details..."
+                            class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                        <svg class="absolute right-3 top-2.5 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse">
                         <thead>
@@ -148,6 +190,16 @@
                         </tbody>
                     </table>
                 </div>
+                <!-- Log Pagination -->
+                <div class="mt-6 flex items-center justify-between border-t border-white/5 pt-6">
+                    <p class="text-xs text-gray-500">Page {{ log_page }} of {{ log_total_pages or 1 }}</p>
+                    <div class="flex gap-2">
+                        <button onclick="changePage('log', {{ log_page - 1 }})" {{ 'disabled' if log_page <= 1 }}
+                            class="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-medium hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Previous</button>
+                        <button onclick="changePage('log', {{ log_page + 1 }})" {{ 'disabled' if log_page >= log_total_pages }}
+                            class="px-3 py-1.5 rounded-lg bg-white/10 border border-white/10 text-xs font-medium hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition-all">Next</button>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -170,6 +222,41 @@
                 else alert((await res.json()).detail || "Failed to change role");
             } catch (e) { alert("Network error"); }
         }
+
+        // Search & Pagination Logic
+        function updateUrl(params) {
+            const url = new URL(window.location);
+            Object.keys(params).forEach(key => {
+                if(params[key] !== undefined) url.searchParams.set(key, params[key]);
+            });
+            window.location.href = url.toString();
+        }
+
+        function changePage(type, page) {
+            const params = {};
+            params[type + '_page'] = page;
+            updateUrl(params);
+        }
+
+        // Debounced search
+        function setupSearch(inputId, paramName) {
+            const input = document.getElementById(inputId);
+            let timeout;
+            input.addEventListener('input', (e) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    const params = {};
+                    params[paramName] = e.target.value;
+                    params[inputId.replace('Search', '') + '_page'] = 1; // Reset to page 1
+                    updateUrl(params);
+                }, 500);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupSearch('userSearch', 'user_query');
+            setupSearch('logSearch', 'log_query');
+        });
     </script>
 </body>
 
