@@ -9,6 +9,10 @@ router = APIRouter(tags=["Users Profile"])
 @router.get("/users/me")
 async def read_users_me(current_user: User = Depends(get_current_active_user_or_401)):
     """Returns the current logged-in user's profile data."""
+    from app.models import UserPasskey
+    db = next(get_db()) # Get DB session
+    has_passkey = db.query(UserPasskey).filter(UserPasskey.user_id == current_user.id).first() is not None
+    
     return {
         "id": current_user.id,
         "public_id": current_user.public_id,
@@ -16,6 +20,8 @@ async def read_users_me(current_user: User = Depends(get_current_active_user_or_
         "full_name": current_user.full_name,
         "role": current_user.role,
         "mfa_enabled": current_user.mfa_enabled,
+        "mfa_type": current_user.mfa_type,
+        "has_passkey": has_passkey,
         "google_linked": bool(current_user.google_id),
         "microsoft_linked": bool(current_user.microsoft_id)
     }

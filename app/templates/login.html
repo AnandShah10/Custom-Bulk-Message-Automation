@@ -74,11 +74,30 @@
 
             <!-- Hidden MFA Field (Reveals if required) -->
             <div id="mfaGroup" class="hidden space-y-2 py-4 border-y border-white/5 my-2">
-                <label class="block text-sm font-medium text-purple-300 text-center">Authenticator Code (MFA)</label>
-                <input type="text" name="mfa_code" id="mfa_code" placeholder="000000" maxlength="6"
-                    class="w-full bg-purple-900/40 border border-purple-500/50 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center tracking-[0.5em] text-2xl font-bold font-mono">
-                <p class="text-xs text-gray-400 text-center italic">Check your Authenticator app for the latest code.
-                </p>
+                <label id="mfaLabel" class="block text-sm font-medium text-purple-300 text-center">Authenticator Code (MFA)</label>
+                
+                <!-- 6-digit input for App/Email -->
+                <div id="mfaOtpContainer">
+                    <input type="text" name="mfa_code" id="mfa_code" placeholder="000000" maxlength="6"
+                        class="w-full bg-purple-900/40 border border-purple-500/50 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 text-center tracking-[0.5em] text-2xl font-bold font-mono">
+                    <div id="resendContainer" class="hidden mt-3 text-center">
+                        <button type="button" id="btnResendMfa" class="text-xs text-blue-400 hover:text-blue-300 transition-colors underline">Didn't get the code? Resend to email</button>
+                    </div>
+                </div>
+
+                <!-- Passkey Button -->
+                <button type="button" id="btnPasskeyLogin" class="hidden w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-3">
+                    <span class="text-2xl">🔑</span> Login with Passkey
+                </button>
+
+                <p id="mfaHint" class="text-xs text-gray-400 text-center italic mt-2">Check your app for the latest code.</p>
+                
+                <div id="mfaSwitchContainer" class="hidden mt-4 pt-4 border-t border-white/5 text-center">
+                    <button type="button" id="btnSwitchMfa" class="text-xs text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Try another way...</button>
+                    <div id="mfaMethodsList" class="hidden mt-3 flex flex-col gap-2">
+                        <!-- Methods populated via JS -->
+                    </div>
+                </div>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -136,6 +155,7 @@
         const statusBanner = document.getElementById('statusBanner');
         const mfaGroup = document.getElementById('mfaGroup');
         const mfaCodeInput = document.getElementById('mfa_code');
+        let globalAvailableMethods = [];
 
         function showStatus(message, type = 'error') {
             statusBanner.textContent = message;
@@ -182,25 +202,205 @@
 
                 if (response.ok) {
                     window.location.href = '/dashboard';
-                } else if (response.status === 401 && result.detail === "mfa_required") {
-                    // Reveal MFA input, lock username/password
+                } else if (response.status === 401 && result.status === "mfa_required") {
+                    // Reveal MFA UI
                     mfaGroup.classList.remove('hidden');
-                    mfaCodeInput.focus();
-                    showStatus("Please enter your 6-digit MFA code below.", "info");
-                    submitBtn.innerText = "Verify MFA Code";
+                    
+                    const mfaType = result.mfa_type || 'app';
+                    const label = document.getElementById('mfaLabel');
+                    const hint = document.getElementById('mfaHint');
+                    const otpContainer = document.getElementById('mfaOtpContainer');
+                    const passkeyBtn = document.getElementById('btnPasskeyLogin');
+                    const resendBox = document.getElementById('resendContainer');
+
+                    otpContainer.classList.add('hidden');
+                    passkeyBtn.classList.add('hidden');
+                    resendBox.classList.add('hidden');
+
+                    if (mfaType === 'app') {
+                        label.innerText = "Authenticator App Code";
+                        hint.innerText = "Open your app (Google Authenticator, Authy, etc) for the 6-digit code.";
+                        otpContainer.classList.remove('hidden');
+                        mfaCodeInput.focus();
+                        showStatus("Please enter your Authenticator code.", "info");
+                    } else if (mfaType === 'email') {
+                        label.innerText = "Email Verification Code";
+                        hint.innerText = "A 6-digit code was sent to your email address.";
+                        otpContainer.classList.remove('hidden');
+                        resendBox.classList.remove('hidden');
+                        mfaCodeInput.focus();
+                        showStatus("Check your email for the verification code.", "info");
+                    } else if (mfaType === 'passkey') {
+                        label.innerText = "Biometric Login";
+                        hint.innerText = "Use your device's fingerprint, face, or PIN to continue.";
+                        passkeyBtn.classList.remove('hidden');
+                        showStatus("Click the button below to use your Passkey.", "info");
+                        // Automatically trigger passkey if possible (optional)
+                    }
+
+                    submitBtn.innerText = mfaType === 'passkey' ? "Verify with Passkey" : "Complete Login";
+                    if (mfaType === 'passkey') submitBtn.classList.add('hidden'); // Use the custom big button
+                    else submitBtn.classList.remove('hidden');
+
+                    // Setup Switcher
+                    globalAvailableMethods = result.available_methods || ['app', 'email'];
+                    updateMfaMethodsList(mfaType);
+                    if (globalAvailableMethods.length > 1) {
+                        document.getElementById('mfaSwitchContainer').classList.remove('hidden');
+                    }
+
                 } else if (response.status === 401 && result.detail === "invalid_mfa") {
-                    showStatus("Invalid MFA code. Please try again.", "error");
-                    submitBtn.innerText = "Verify MFA Code";
+                    showStatus("Invalid code. Please try again.", "error");
                 } else {
-                    showStatus(result.detail || "Login failed. Please check your credentials.", "error");
+                    showStatus(result.detail || "Login failed.", "error");
                     submitBtn.innerText = originalText;
                 }
             } catch (err) {
-                showStatus("Unable to connect to server. Please try again later.", "error");
+                showStatus("Network error. Please try again.", "error");
                 submitBtn.innerText = originalText;
             } finally {
                 submitBtn.disabled = false;
             }
+        });
+
+        function updateMfaMethodsList(currentType) {
+            const list = document.getElementById('mfaMethodsList');
+            list.innerHTML = '';
+            globalAvailableMethods.forEach(m => {
+                if (m === currentType) return;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "text-[11px] py-2.5 px-3 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-gray-300 flex items-center justify-center gap-2 capitalize active:scale-95";
+                const icon = m === 'app' ? '📱' : (m === 'email' ? '📧' : '🔑');
+                btn.innerHTML = `${icon} Use ${m === 'app' ? 'Authenticator App' : (m === 'email' ? 'Email Code' : 'Passkey')}`;
+                btn.onclick = () => switchMfaUI(m);
+                list.appendChild(btn);
+            });
+        }
+
+        function switchMfaUI(mfaType) {
+            const label = document.getElementById('mfaLabel');
+            const hint = document.getElementById('mfaHint');
+            const otpContainer = document.getElementById('mfaOtpContainer');
+            const passkeyBtn = document.getElementById('btnPasskeyLogin');
+            const resendBox = document.getElementById('resendContainer');
+            const list = document.getElementById('mfaMethodsList');
+            const switchBtn = document.getElementById('btnSwitchMfa');
+
+            otpContainer.classList.add('hidden');
+            passkeyBtn.classList.add('hidden');
+            resendBox.classList.add('hidden');
+            list.classList.add('hidden');
+            switchBtn.classList.remove('hidden');
+            
+            // Update the list for next time
+            updateMfaMethodsList(mfaType);
+
+            if (mfaType === 'app') {
+                label.innerText = "Authenticator App Code";
+                hint.innerText = "Open your app for the 6-digit code.";
+                otpContainer.classList.remove('hidden');
+                mfaCodeInput.focus();
+                showStatus("Authenticator mode active.", "info");
+            } else if (mfaType === 'email') {
+                label.innerText = "Email Verification Code";
+                hint.innerText = "Check your email for the 6-digit code.";
+                otpContainer.classList.remove('hidden');
+                resendBox.classList.remove('hidden');
+                mfaCodeInput.focus();
+                showStatus("Email OTP mode active. Check your inbox.", "info");
+            } else if (mfaType === 'passkey') {
+                label.innerText = "Biometric Login";
+                hint.innerText = "Use your device's fingerprint or face to continue.";
+                passkeyBtn.classList.remove('hidden');
+                showStatus("Passkey mode active. Click below to scan.", "info");
+            }
+
+            submitBtn.innerText = mfaType === 'passkey' ? "Verify with Passkey" : "Complete Login";
+            if (mfaType === 'passkey') submitBtn.classList.add('hidden');
+            else submitBtn.classList.remove('hidden');
+        }
+
+        document.getElementById('btnSwitchMfa').addEventListener('click', () => {
+            const list = document.getElementById('mfaMethodsList');
+            const btn = document.getElementById('btnSwitchMfa');
+            list.classList.toggle('hidden');
+            btn.classList.add('hidden');
+        });
+
+        // Resend MFA Email
+        document.getElementById('btnResendMfa').addEventListener('click', async () => {
+             const formData = new FormData(form);
+             try {
+                const res = await fetch('/auth/resend-mfa', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(res.ok) {
+                    showStatus("New code sent to your email!", "info");
+                } else {
+                    showStatus(data.detail, "error");
+                }
+             } catch(e) { showStatus("Failed to resend.", "error"); }
+        });
+
+        // Passkey Login Logic
+        document.getElementById('btnPasskeyLogin').addEventListener('click', async () => {
+             const username = document.getElementsByName('username')[0].value;
+             if(!username) {
+                 showStatus("Please enter your email first.", "error");
+                 return;
+             }
+             
+             try {
+                 const res = await fetch(`/auth/passkey/login/options?username=${encodeURIComponent(username)}`);
+                 const options = await res.json();
+
+                 const bufferDecode = (value) => {
+                    return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+                 };
+
+                 options.challenge = bufferDecode(options.challenge);
+                 if (options.allowCredentials) {
+                    options.allowCredentials.forEach(c => c.id = bufferDecode(c.id));
+                 }
+
+                 const credential = await navigator.credentials.get({ publicKey: options });
+
+                 const bufferEncode = (value) => {
+                    return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+                        .replace(/\+/g, "-")
+                        .replace(/\//g, "_")
+                        .replace(/=/g, "");
+                 };
+
+                 const verificationData = {
+                    id: credential.id,
+                    rawId: bufferEncode(credential.rawId),
+                    type: credential.type,
+                    response: {
+                        authenticatorData: bufferEncode(credential.response.authenticatorData),
+                        clientDataJSON: bufferEncode(credential.response.clientDataJSON),
+                        signature: bufferEncode(credential.response.signature),
+                        userHandle: credential.response.userHandle ? bufferEncode(credential.response.userHandle) : null,
+                    },
+                 };
+
+                 const verifyRes = await fetch('/auth/passkey/login/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(verificationData)
+                 });
+
+                 if(verifyRes.ok) {
+                    window.location.href = '/dashboard';
+                 } else {
+                    const data = await verifyRes.json();
+                    showStatus(data.detail, "error");
+                 }
+
+             } catch(e) {
+                console.error(e);
+                showStatus("Passkey login failed or cancelled.", "error");
+             }
         });
     </script>
 </body>

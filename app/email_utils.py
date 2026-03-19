@@ -69,3 +69,42 @@ async def send_password_reset_email(email_to: str, reset_link: str):
 
     fm = FastMail(conf)
     await fm.send_message(message)
+
+async def send_mfa_code_email(email_to: str, code: str):
+    message = MessageSchema(
+        subject="Your MFA Verification Code - CBMS Pro",
+        recipients=[email_to],
+        body=f"""
+        <div style="background-color: #0f172a; padding: 40px 20px; font-family: 'Inter', Arial, sans-serif;">
+            <div style="max-width: 500px; margin: 0 auto; background-color: #1e293b; border-radius: 24px; padding: 40px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="text-align: center; margin-bottom: 32px;">
+                    <table border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto 20px auto;">
+                        <tr>
+                            <td align="center" style="background-color: #8b5cf6; width: 64px; height: 64px; border-radius: 20px;">
+                                <span style="font-size: 32px; line-height: 64px;">🛡️</span>
+                            </td>
+                        </tr>
+                    </table>
+                    <h1 style="color: #ffffff; font-size: 24px; font-weight: 700; margin: 0; letter-spacing: -0.025em;">Verification Code</h1>
+                    <p style="color: #94a3b8; font-size: 16px; margin-top: 12px;">Use the code below to sign in to CBMS Pro.</p>
+                </div>
+                
+                <div style="background-color: #0f172a; border-radius: 16px; padding: 32px; text-align: center; margin-bottom: 32px; border: 1px solid rgba(139, 92, 246, 0.2);">
+                    <span style="color: #ffffff; font-size: 40px; font-weight: 800; letter-spacing: 0.2em; font-family: 'Courier New', Courier, monospace;">{code}</span>
+                </div>
+                
+                <div style="color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 32px; text-align: center;">
+                    <p>This code is valid for 5 minutes. If you didn't request this code, please secure your account immediately.</p>
+                </div>
+                
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 24px; text-align: center;">
+                    <p style="color: #64748b; font-size: 12px; margin: 0;">&copy; 2026 CBMS Pro Automation. All rights reserved.</p>
+                </div>
+            </div>
+        </div>
+        """,
+        subtype=MessageType.html
+    )
+
+    fm = FastMail(conf)
+    await fm.send_message(message)

@@ -90,6 +90,10 @@ async def on_startup():
             db.execute(text("ALTER TABLE users ADD COLUMN full_name VARCHAR"))
             print("Added full_name column")
 
+        if "mfa_type" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN mfa_type VARCHAR DEFAULT 'app'"))
+            print("Added mfa_type column")
+
         db.commit()
 
         # Backfill UUIDs for existing users who don't have one

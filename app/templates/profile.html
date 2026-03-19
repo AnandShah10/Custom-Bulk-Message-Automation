@@ -111,12 +111,18 @@
 
                 <!-- Two-Factor Authentication -->
                 <div class="glass-panel rounded-3xl p-8 shadow-2xl border border-white/10">
-                    <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center justify-between mb-4 flex-wrap gap-4">
                         <div>
-                            <h3 class="text-xl font-bold">Two-Factor Authentication (MFA)</h3>
-                            <p class="text-sm text-gray-400 mt-1" id="mfaStatusText">Checking MFA status...</p>
+                            <h3 class="text-xl font-bold">Two-Factor Authentication</h3>
+                            <p class="text-[13px] text-gray-400 mt-1" id="mfaStatusText">Checking status...</p>
                         </div>
-                        <div id="mfaBadge" class="hidden px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"></div>
+                        <div class="flex items-center gap-3">
+                             <div id="passkeyBadge" class="hidden px-2 py-0.5 rounded-lg text-[9px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center gap-1.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse shadow-[0_0_8px_rgba(168,85,247,0.5)]"></span>
+                                Passkey Ready
+                            </div>
+                            <div id="mfaBadge" class="hidden px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border"></div>
+                        </div>
                     </div>
 
                     <div id="mfaSetupBox" class="hidden border border-white/5 bg-black/20 p-6 rounded-2xl">
@@ -135,10 +141,38 @@
                         </form>
                     </div>
                     
-                    <div id="mfaActionButtons" class="mt-4">
-                        <button id="btnSetupMfa" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg transition-colors hidden">
-                            Set up MFA Now
+                    <div id="mfaActionButtons" class="mt-6 flex flex-wrap gap-3">
+                        <button id="btnSetupMfa" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 px-6 rounded-lg transition-colors hidden text-sm shadow-lg shadow-indigo-500/20">
+                            Set up App MFA
                         </button>
+                        <button id="btnRegisterPasskey" class="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-6 rounded-lg transition-colors text-sm shadow-lg shadow-purple-500/20">
+                            Register Passkey
+                        </button>
+                    </div>
+
+                    <!-- MFA Preferences (Visible when enabled or has passkey) -->
+                    <div id="mfaPreferences" class="hidden mt-8 pt-6 border-t border-white/5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-sm font-bold text-gray-400 uppercase tracking-wider">Preferred MFA Method</h4>
+                            <button id="btnDisableMfa" class="hidden text-xs text-red-400 hover:text-red-300 transition-colors flex items-center gap-1">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                Disable All MFA
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <button onclick="setMfaType('app')" id="mfaType-app" class="mfa-type-btn p-4 rounded-xl border border-white/10 bg-white/5 text-center transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 group">
+                                <div class="text-2xl mb-2 transition-transform group-hover:scale-110">📱</div>
+                                <div class="text-xs font-bold text-gray-300">Authenticator App</div>
+                            </button>
+                            <button onclick="setMfaType('email')" id="mfaType-email" class="mfa-type-btn p-4 rounded-xl border border-white/10 bg-white/5 text-center transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 group">
+                                <div class="text-2xl mb-2 transition-transform group-hover:scale-110">📧</div>
+                                <div class="text-xs font-bold text-gray-300">Email OTP</div>
+                            </button>
+                            <button onclick="setMfaType('passkey')" id="mfaType-passkey" class="mfa-type-btn p-4 rounded-xl border border-white/10 bg-white/5 text-center transition-all hover:bg-white/10 hover:border-white/20 active:scale-95 group">
+                                <div class="text-2xl mb-2 transition-transform group-hover:scale-110">🔑</div>
+                                <div class="text-xs font-bold text-gray-300">Passkey</div>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -162,11 +196,113 @@
                 b.classList.remove('bg-white/10', 'text-white');
                 b.classList.add('text-gray-400');
             });
-
             document.getElementById(tabName + 'Section').classList.remove('hidden');
             document.getElementById('tabBtn-' + tabName).classList.add('bg-white/10', 'text-white');
             document.getElementById('tabBtn-' + tabName).classList.remove('text-gray-400');
         }
+
+        // MFA Type Toggling
+        function updateMfaTypeButtons(activeType) {
+            document.querySelectorAll('.mfa-type-btn').forEach(btn => {
+                const type = btn.id.split('-')[1];
+                if(type === activeType) {
+                    btn.classList.add('bg-indigo-500/20', 'border-indigo-500/50', 'text-white');
+                    btn.classList.remove('bg-white/5', 'border-white/10');
+                } else {
+                    btn.classList.remove('bg-indigo-500/20', 'border-indigo-500/50', 'text-white');
+                    btn.classList.add('bg-white/5', 'border-white/10');
+                }
+            });
+        }
+
+        async function setMfaType(type) {
+            const formData = new FormData();
+            formData.append('mfa_type', type);
+            try {
+                const res = await fetch('/mfa/type', { method: 'POST', body: formData });
+                const data = await res.json();
+                if(res.ok) {
+                    // Force reload to update all UI statuses (badge, text, etc)
+                    window.location.reload();
+                } else {
+                    alert(data.detail);
+                }
+            } catch(e) { alert("Failed to switch MFA type."); }
+        }
+
+        // Disable MFA
+        document.getElementById('btnDisableMfa').addEventListener('click', async () => {
+            const password = prompt("Please enter your current password to disable MFA:");
+            if(!password) return;
+
+            const formData = new FormData();
+            formData.append('password', password);
+            try {
+                const res = await fetch('/mfa/disable', { method: 'POST', body: formData });
+                if(res.ok) {
+                    window.location.reload();
+                } else {
+                    const data = await res.json();
+                    alert(data.detail || "Failed to disable MFA.");
+                }
+            } catch(e) { alert("Network error."); }
+        });
+
+        // Passkey Registration
+        document.getElementById('btnRegisterPasskey').addEventListener('click', async () => {
+             try {
+                const res = await fetch('/mfa/passkey/register/options');
+                const options = await res.json();
+                
+                // Helper to convert base64url to Uint8Array
+                const bufferDecode = (value) => {
+                    return Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
+                };
+
+                options.user.id = bufferDecode(options.user.id);
+                options.challenge = bufferDecode(options.challenge);
+                
+                if (options.excludeCredentials) {
+                    options.excludeCredentials.forEach(c => c.id = bufferDecode(c.id));
+                }
+
+                const credential = await navigator.credentials.create({ publicKey: options });
+                
+                // Helper to convert Uint8Array to base64url
+                const bufferEncode = (value) => {
+                    return btoa(String.fromCharCode.apply(null, new Uint8Array(value)))
+                        .replace(/\+/g, "-")
+                        .replace(/\//g, "_")
+                        .replace(/=/g, "");
+                };
+
+                const verificationData = {
+                    id: credential.id,
+                    rawId: bufferEncode(credential.rawId),
+                    type: credential.type,
+                    response: {
+                        attestationObject: bufferEncode(credential.response.attestationObject),
+                        clientDataJSON: bufferEncode(credential.response.clientDataJSON),
+                    },
+                };
+
+                const verifyRes = await fetch('/mfa/passkey/register/verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(verificationData)
+                });
+
+                if(verifyRes.ok) {
+                    alert("Passkey registered! You can now switch your MFA type to 'Passkey'.");
+                } else {
+                    const data = await verifyRes.json();
+                    alert(data.detail);
+                }
+             } catch(e) { 
+                console.error(e);
+                alert("Passkey registration failed or cancelled."); 
+             }
+        });
 
         document.addEventListener('DOMContentLoaded', async () => {
             // Check Profile Status
@@ -175,19 +311,40 @@
                 if(res.ok) {
                     const user = await res.json();
                     
-                    if(user.mfa_enabled) {
-                        document.getElementById('mfaStatusText').textContent = "Your account is highly secure.";
-                        const badge = document.getElementById('mfaBadge');
-                        badge.textContent = "Enabled";
-                        badge.classList.add('bg-green-500/20', 'text-green-400');
-                        badge.classList.remove('hidden');
+                    if(user.has_passkey) {
+                        document.getElementById('passkeyBadge').classList.remove('hidden');
+                        document.getElementById('btnRegisterPasskey').textContent = "Register Another Passkey";
+                    }
+
+                    if(user.mfa_enabled || user.has_passkey) {
+                        document.getElementById('mfaPreferences').classList.remove('hidden');
+                        updateMfaTypeButtons(user.mfa_type);
+                        
+                        if(user.mfa_enabled) {
+                            document.getElementById('mfaStatusText').textContent = "Your account is currently secured using " + (user.mfa_type === 'app' ? 'Authenticator App' : (user.mfa_type === 'email' ? 'Email OTP' : 'Passkey')) + ".";
+                            const badge = document.getElementById('mfaBadge');
+                            badge.textContent = "Enabled";
+                            badge.className = "px-3 py-1 rounded-lg text-[10px] font-bold uppercase bg-green-500/20 text-green-400 border border-green-500/30";
+                            badge.classList.remove('hidden');
+                            document.getElementById('btnDisableMfa').classList.remove('hidden');
+                            document.getElementById('btnSetupMfa').classList.add('hidden');
+                        } else {
+                            document.getElementById('mfaStatusText').textContent = "MFA is and ready to be activated. Select a method below to enable it.";
+                            const badge = document.getElementById('mfaBadge');
+                            badge.textContent = "Inactive";
+                            badge.className = "px-3 py-1 rounded-lg text-[10px] font-bold uppercase bg-orange-500/10 text-orange-400 border border-orange-500/20";
+                            badge.classList.remove('hidden');
+                            document.getElementById('btnSetupMfa').classList.remove('hidden');
+                            document.getElementById('btnDisableMfa').classList.add('hidden');
+                        }
                     } else {
                         document.getElementById('mfaStatusText').textContent = "Add an extra layer of security to your account.";
                         const badge = document.getElementById('mfaBadge');
                         badge.textContent = "Disabled";
-                        badge.classList.add('bg-red-500/20', 'text-red-400');
+                        badge.className = "px-3 py-1 rounded-lg text-[10px] font-bold uppercase bg-red-500/10 text-red-400 border border-red-500/20";
                         badge.classList.remove('hidden');
                         document.getElementById('btnSetupMfa').classList.remove('hidden');
+                        document.getElementById('btnDisableMfa').classList.add('hidden');
                     }
                 }
             } catch(e) {}

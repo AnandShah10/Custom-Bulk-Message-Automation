@@ -1,15 +1,26 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Response, Form, Request
+from fastapi.responses import JSONResponse
 from starlette.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from app.database import get_db
-from app.models import User, SystemLog
+from app.models import User, SystemLog, UserPasskey
 from app.auth import verify_password, create_access_token, get_password_hash, get_current_user
 import pyotp
 import os
+import json
+import base64
+import webauthn
+from webauthn import options_to_json, verify_authentication_response, generate_authentication_options
+from webauthn.helpers.structs import UserVerificationRequirement, PublicKeyCredentialDescriptor
 from dotenv import load_dotenv
+
 load_dotenv()
 base_url = os.getenv("BASE_URL")
 router = APIRouter(tags=["Authentication"])
+
+# Configuration for WebAuthn (Matches mfa.py)
+RP_ID = "localhost" 
+ORIGIN = f"http://{RP_ID}:8001"
 
 @router.post("/auth/signup")
 async def signup(
@@ -62,10 +73,35 @@ async def login(
     # Handle MFA verification if enabled
     if user.mfa_enabled:
         if not mfa_code:
-            raise HTTPException(status_code=401, detail="mfa_required") # Trigger MFA UI
+            # Check for passkeys to include in available methods
+            passkeys = db.query(UserPasskey).filter(UserPasskey.user_id == user.id).all()
+            available_methods = ["app", "email"]
+            if passkeys:
+                available_methods.append("passkey")
+                
+            # If email OTP, send it immediately
+            if user.mfa_type == "email":
+                # Generate and send code
+                from app.email_utils import send_mfa_code_email
+                totp = pyotp.TOTP(user.mfa_secret)
+                code = totp.now()
+                try:
+                    await send_mfa_code_email(user.username, code)
+                except Exception as e:
+                    print(f"Failed to send MFA email: {e}")
+
+            return JSONResponse(
+                status_code=401,
+                content={
+                    "status": "mfa_required",
+                    "mfa_type": user.mfa_type,
+                    "available_methods": available_methods
+                }
+            )
         
+        # Verify code for both app and email (it's the same TOTP secret)
         totp = pyotp.TOTP(user.mfa_secret)
-        if not totp.verify(mfa_code):
+        if not totp.verify(mfa_code, valid_window=1):
             raise HTTPException(status_code=401, detail="invalid_mfa")
             
     # Success Login
@@ -77,6 +113,116 @@ async def login(
     res = Response(content='{"status":"ok", "message":"Login successful"}', media_type="application/json")
     res.set_cookie(key="session_token", value=access_token, httponly=True, max_age=86400*7, samesite="lax") # 7 days
     return res
+
+@router.post("/auth/resend-mfa")
+async def resend_mfa_email(
+    username: str = Form(...),
+    password: str = Form(...),
+    db: Session = Depends(get_db)
+):
+    """Resends the MFA code if the type is email."""
+    user = db.query(User).filter(User.username == username).first()
+    from app.auth import verify_password
+    if not user or not verify_password(password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Authentication failed")
+    
+    if user.mfa_enabled and user.mfa_type == "email":
+        totp = pyotp.TOTP(user.mfa_secret)
+        code = totp.now()
+        from app.email_utils import send_mfa_code_email
+        await send_mfa_code_email(user.username, code)
+        return {"message": "MFA code resent to your email."}
+    
+    raise HTTPException(status_code=400, detail="MFA not set to email or not enabled.")
+
+    raise HTTPException(status_code=400, detail="MFA not set to email or not enabled.")
+
+@router.get("/auth/passkey/login/options")
+async def get_passkey_login_options(
+    request: Request,
+    username: str,
+    db: Session = Depends(get_db)
+):
+    """Generates authentication options for Passkey login."""
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+    
+    passkeys = db.query(UserPasskey).filter(UserPasskey.user_id == user.id).all()
+    if not passkeys:
+        raise HTTPException(status_code=400, detail="No passkeys registered for this user.")
+        
+    options = webauthn.generate_authentication_options(
+        rp_id=RP_ID,
+        allow_credentials=[
+            PublicKeyCredentialDescriptor(id=base64.b64decode(p.credential_id)) 
+            for p in passkeys
+        ],
+        user_verification=UserVerificationRequirement.PREFERRED,
+    )
+    
+    # Store challenge in session as base64 string
+    request.session["authentication_challenge"] = base64.b64encode(options.challenge).decode('utf-8')
+    request.session["authentication_username"] = username
+    
+    return json.loads(options_to_json(options))
+
+@router.post("/auth/passkey/login/verify")
+async def verify_passkey_login(
+    request: Request,
+    verification_data: dict,
+    db: Session = Depends(get_db)
+):
+    """Verifies the Passkey response and logs the user in."""
+    challenge_b64 = request.session.pop("authentication_challenge", None)
+    username = request.session.pop("authentication_username", None)
+    
+    if not challenge_b64 or not username:
+        raise HTTPException(status_code=400, detail="Authentication challenge missing or expired.")
+        
+    challenge = base64.b64decode(challenge_b64)
+        
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found.")
+        
+    # Standardize the credential ID from base64url (browser) to base64 (DB)
+    raw_id_b64url = verification_data.get("id")
+    # Convert base64url to standard base64 if needed, though they might match if no special chars
+    # Safer to convert:
+    temp_id = raw_id_b64url.replace('-', '+').replace('_', '/')
+    while len(temp_id) % 4: temp_id += '='
+    standard_b64_id = temp_id
+
+    passkey = db.query(UserPasskey).filter(UserPasskey.credential_id == standard_b64_id, UserPasskey.user_id == user.id).first()
+    if not passkey:
+        raise HTTPException(status_code=400, detail="Passkey not recognized.")
+        
+    try:
+        authentication_verification = verify_authentication_response(
+            credential=verification_data,
+            expected_challenge=challenge,
+            expected_origin=ORIGIN,
+            expected_rp_id=RP_ID,
+            credential_public_key=base64.b64decode(passkey.public_key),
+            credential_current_sign_count=passkey.sign_count,
+        )
+        
+        # Update sign count
+        passkey.sign_count = authentication_verification.new_sign_count
+        
+        # Success Login
+        log = SystemLog(user_id=user.id, action="LOGIN_PASSKEY", details=f"User {username} logged in via Passkey.")
+        db.add(log)
+        db.commit()
+
+        access_token = create_access_token(data={"sub": user.username})
+        res = Response(content='{"status":"ok", "message":"Login successful"}', media_type="application/json")
+        res.set_cookie(key="session_token", value=access_token, httponly=True, max_age=86400*7, samesite="lax")
+        return res
+        
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Authentication failed: {str(e)}")
 
 @router.post("/auth/logout")
 async def logout(response: Response, user = Depends(get_current_user), db: Session = Depends(get_db)):

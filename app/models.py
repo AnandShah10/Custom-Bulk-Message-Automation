@@ -23,6 +23,7 @@ class User(Base):
     # MFA & OAuth Integrations
     mfa_secret = Column(String, nullable=True)
     mfa_enabled = Column(Boolean, default=False)
+    mfa_type = Column(String, default="app") # 'app', 'email', 'passkey'
     google_id = Column(String, unique=True, index=True, nullable=True)
     microsoft_id = Column(String, unique=True, index=True, nullable=True)
     
@@ -40,4 +41,14 @@ class SystemLog(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     action = Column(String, index=True)
     details = Column(String, nullable=True)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+class UserPasskey(Base):
+    __tablename__ = "user_passkeys"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    credential_id = Column(String, unique=True, index=True)
+    public_key = Column(Text) # Store as base64 or hex
+    sign_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
