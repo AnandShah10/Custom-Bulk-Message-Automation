@@ -102,16 +102,29 @@
             animation: toastProgress 5s linear forwards !important;
         }
 
-        .toast-success .toast-progress { background: #10b981 !important; }
-        .toast-error .toast-progress { background: #ef4444 !important; }
+        .toast-success .toast-progress {
+            background: #10b981 !important;
+        }
+
+        .toast-error .toast-progress {
+            background: #ef4444 !important;
+        }
 
         @keyframes toastProgress {
-            from { transform: scaleX(1); }
-            to { transform: scaleX(0); }
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
         }
 
         @keyframes toastSlideOut {
-            to { transform: translateX(120%) scale(0.9); opacity: 0; }
+            to {
+                transform: translateX(120%) scale(0.9);
+                opacity: 0;
+            }
         }
 
         .toast.hiding {
@@ -127,20 +140,23 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/30 rounded-full blur-[120px]">
         </div>
     </div>
-    
+
 
     <!-- Navigation -->
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <a href="/dashboard" class="flex items-center gap-2 group">
-                    <div class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                    <div
+                        class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="2 2 20 20">
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                     </div>
-                    <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+                    <span
+                        class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS
+                        Pro</span>
                 </a>
             </div>
             <div class="flex items-center gap-4">
@@ -167,9 +183,11 @@
                     <div
                         class="absolute right-0 mt-2 w-48 bg-[#121c32] rounded-xl shadow-2xl border border-white/10 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100">
                         <a href="/sessions"
-                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">WhatsApp Session</a>
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">WhatsApp
+                            Session</a>
                         <a href="/profile"
-                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security Settings</a>
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security
+                            Settings</a>
                         <form action="/auth/logout" method="POST" class="block w-full text-left">
                             <button type="submit"
                                 class="w-full text-left px-4 py-3 text-sm text-red-400 hover:bg-white/5 hover:text-red-300 transition-colors">Sign
@@ -285,35 +303,40 @@
 
                 <!-- Image URL -->
                 <div class="input-group dynamic-field hidden" data-shows="image">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Image URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Image URL <span
+                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
                     <input type="url" name="image_url" placeholder="https://example.com/image.jpg"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
 
                 <!-- Video URL -->
                 <div class="input-group dynamic-field hidden" data-shows="video">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Video URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Video URL <span
+                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
                     <input type="url" name="video_url" placeholder="https://example.com/video.mp4"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
 
                 <!-- Audio URL -->
                 <div class="input-group dynamic-field hidden" data-shows="audio">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Audio URL <span
+                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
                     <input type="url" name="audio_url" placeholder="https://example.com/audio.mp3"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
 
                 <!-- Document URL -->
                 <div class="input-group dynamic-field hidden" data-shows="document">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Document URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Document URL <span
+                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
                     <input type="url" name="document_url" placeholder="https://example.com/file.pdf"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
 
                 <!-- Sticker URL -->
                 <div class="input-group dynamic-field hidden" data-shows="sticker">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL <span
+                            class="text-xs text-gray-500 font-normal ml-2">(Max 50MB)</span></label>
                     <input type="url" name="sticker_url" placeholder="https://example.com/sticker.webp"
                         class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                 </div>
@@ -461,7 +484,7 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-[#e9edef] font-medium text-base leading-tight">Client Preview</div>
+                        <div class="text-[#e9edef] font-medium text-base leading-tight">Preview</div>
                         <div class="text-[#8696a0] text-xs">online</div>
                     </div>
                 </div>
@@ -499,7 +522,7 @@
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `toast toast-${type}`;
-            
+
             const icons = {
                 success: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
                 error: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
@@ -518,7 +541,7 @@
             `;
 
             container.appendChild(toast);
-            
+
             // Force reflow
             toast.offsetHeight;
             toast.classList.add('show');
@@ -529,7 +552,7 @@
             };
 
             const autoTimeout = setTimeout(removeToast, 5000);
-            
+
             toast.onclick = () => {
                 clearTimeout(autoTimeout);
                 removeToast();
@@ -576,6 +599,8 @@
         const conPhone = document.querySelector('input[name="contact_phone"]');
         const audio_text = document.querySelector('textarea[name="audio_text"]');
         const sticker_text = document.querySelector('textarea[name="sticker_text"]');
+        const latitude = document.querySelector('input[name="latitude"]');
+        const longitude = document.querySelector('input[name="longitude"]');
 
         let selectedSequence = []; // Tracks ordered intent
 
@@ -657,54 +682,80 @@
 
                 if (type === 'text') {
                     const baseText = msgText.value.trim() || 'Text message content...';
-                    contentHTML = `<span>${baseText.replace(/\\n/g, '<br>')}</span>`;
+                    contentHTML = `<span>${baseText.replace(/\n/g, '<br>')}</span>`;
                 }
                 else if (type === 'image') {
                     const baseText = imgCap.value.trim();
-                    contentHTML = `<div class="media-placeholder border border-white/10 overflow-hidden"><img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300&h=150&fit=crop" class="w-full h-full object-cover opacity-60"></div>`;
-                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    const url = imgUrl.value.trim() || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=300&h=150&fit=crop';
+                    contentHTML = `<div class="media-placeholder border border-white/10 overflow-hidden"><img src="${url}" class="w-full h-full object-cover"></div>`;
+                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'video') {
                     const baseText = vidCap.value.trim();
-                    contentHTML = `<div class="media-placeholder">▶️</div>`;
-                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    const url = vidUrl.value.trim();
+                    contentHTML = `
+                        <div class="media-placeholder bg-black overflow-hidden flex items-center justify-center">
+                            ${url ? `<video src="${url}" controls class="w-full h-full"></video>` : '<div class="text-3xl">🎬</div>'}
+                        </div>`;
+                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'audio') {
+                    const url = audioUrl.value.trim();
                     contentHTML = `
-                        <div class="bg-black/20 p-3 rounded flex items-center gap-4">
-                            <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">▶️</div>
-                            <div class="flex-1">
-                                <div class="h-1 bg-white/10 rounded-full overflow-hidden">
-                                    <div class="w-1/3 h-full bg-blue-500"></div>
+                        <div class="bg-black/20 p-3 rounded flex flex-col gap-2">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center text-blue-400">🎵</div>
+                                <div class="flex-1">
+                                    <div class="h-1 bg-white/10 rounded-full overflow-hidden">
+                                        <div class="w-1/3 h-full bg-blue-500"></div>
+                                    </div>
                                 </div>
+                                <div class="text-[10px] text-gray-500">Preview</div>
                             </div>
-                            <div class="text-[10px] text-gray-500">0:12</div>
+                            <audio src="${url}" controls class="w-full h-8 opacity-60"></audio>
                         </div>`;
                 }
                 else if (type === 'sticker') {
-                    contentHTML = `<div class="media-placeholder border-none overflow-visible"><img src="https://images.unsplash.com/photo-1599508544955-f269a7c369dd?q=80&w=150&h=150&fit=crop" class="w-24 h-24 object-contain animate-bounce"></div>`;
+                    const url = stiUrl.value.trim() || 'https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdjY3YmU1MWx0czB0cGJmYjdlenFjdjNkYmFiMWFscWgwaHg5bDc3aCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l46Cnk4ZRTlfeI32o/giphy.gif';
+                    contentHTML = `<div class="media-placeholder border-none overflow-visible"><img src="${url}" class="w-24 h-24 object-contain"></div>`;
                 }
                 else if (type === 'document') {
                     const baseText = docCap.value.trim();
+                    const url = docUrl.value.trim();
                     const docTitle = docName.value.trim() || 'Document.pdf';
                     contentHTML = `
-                        <div class="bg-black/20 p-3 rounded flex items-center gap-3 mb-1">
-                            <div class="text-red-400 text-2xl">📄</div>
-                            <div class="flex-1 truncate font-medium">${docTitle}</div>
+                        <div class="bg-black/20 p-3 rounded flex flex-col gap-3 mb-1">
+                            <div class="flex items-center gap-3">
+                                <div class="text-red-400 text-2xl">📄</div>
+                                <div class="flex-1 truncate font-medium">${docTitle}</div>
+                            </div>
+                            ${url && url.toLowerCase().endsWith('.pdf') ? `<embed src="${url}" type="application/pdf" width="100%" height="200px" class="rounded border border-white/10">` : ''}
                         </div>`;
-                    if (baseText) contentHTML += `<div>${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    if (baseText) contentHTML += `<div>${baseText.replace(/\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'location') {
                     const baseText = locCap.value.trim();
                     const lName = locName.value.trim() || 'Pinned Location';
                     const lAddr = locAddress.value.trim() || '';
-                    contentHTML = `<div class="media-placeholder map-bg flex flex-col items-center justify-center p-2 text-center relative overflow-hidden">
-                        <div class="absolute inset-0 bg-[url('https://maps.googleapis.com/maps/api/staticmap?center=0,0&zoom=1&size=400x400')] opacity-30 bg-cover bg-center"></div>
-                        <div class="text-red-500 text-3xl drop-shadow-lg z-10">📍</div>
-                        <div class="font-bold text-sm z-10 mt-1">${lName}</div>
-                        <div class="text-xs opacity-70 truncate w-full z-10">${lAddr}</div>
-                    </div>`;
-                    if (baseText) contentHTML += `<div class="mt-1">${baseText.replace(/\\n/g, '<br>')}</div>`;
+                    const curLat = latitude ? latitude.value : '0';
+                    const curLng = longitude ? longitude.value : '0';
+                    
+                    contentHTML = `
+                        <div class="relative bg-[#1c2a33] rounded-lg border border-white/10 overflow-hidden shadow-inner" style="height: 180px; width: 100%;">
+                            <iframe 
+                                src="https://maps.google.com/maps?q=${curLat},${curLng}&z=15&output=embed" 
+                                width="100%" 
+                                height="100%" 
+                                style="border:0;" 
+                                allowfullscreen="" 
+                                loading="lazy">
+                            </iframe>
+                            <div class="absolute bottom-0 left-0 right-0 bg-black/80 backdrop-blur-md p-3 text-left z-20 border-t border-white/5">
+                                <div class="font-bold text-xs text-white truncate">${lName}</div>
+                                <div class="text-[10px] text-gray-400 truncate mt-0.5">${lAddr}</div>
+                            </div>
+                        </div>`;
+                    if (baseText) contentHTML += `<div class="mt-2 text-sm px-1">${baseText.replace(/\n/g, '<br>')}</div>`;
                 }
                 else if (type === 'contact') {
                     const cName = conName.value.trim() || 'Contact Name';
@@ -747,11 +798,26 @@
             chatPreviewArea.scrollTop = chatPreviewArea.scrollHeight;
         }
 
+        // Debounce Helper
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        const debouncedUpdatePreview = debounce(updatePreview, 1000);
+
         // Bind form inputs to update preview
-        [msgText, imgCap, vidCap, docCap, locCap, audio_text, sticker_text, imgUrl, vidUrl, audioUrl, docUrl, stiUrl, docName, pollQ, pollO, pollM, locName, locAddress, conName, conPhone].forEach(input => {
+        [msgText, imgCap, vidCap, docCap, locCap, audio_text, sticker_text, imgUrl, vidUrl, audioUrl, docUrl, stiUrl, docName, pollQ, pollO, pollM, locName, locAddress, conName, conPhone, latitude, longitude].forEach(input => {
             if (input) {
-                input.addEventListener('keyup', updatePreview);
-                input.addEventListener('change', updatePreview);
+                input.addEventListener('keyup', debouncedUpdatePreview);
+                input.addEventListener('change', debouncedUpdatePreview);
             }
         });
 
@@ -784,13 +850,13 @@
 
                 if (response.ok) {
                     showToast('Campaign Launched!', `${result.messages_queued} messages queued for ${result.contacts_reached} contacts.`, 'success');
-                    
+
                     // User requested to stop clearing/refreshing form
                     // form.reset(); 
                     // fileDisplay.textContent = "Drag and drop or click to browse (Must contain 'Phone' column)";
                     // fileDisplay.classList.remove('text-blue-400');
                     // fileDisplay.classList.add('text-gray-400');
-                    
+
                     // We also don't reset selectedSequence if the user wants to keep the type configuration
                 } else {
                     const errMsg = result.error || result.detail || 'An unknown error occurred';
