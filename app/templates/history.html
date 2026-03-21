@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaign History | CBMS Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/dashboard" class="flex items-center gap-2 group">
+                <div class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+            </a>
+            <div class="flex items-center gap-4 text-sm text-gray-400">
+                <a href="/dashboard" class="hover:text-white transition-colors">Dashboard</a>
+                <a href="/leads" class="hover:text-white transition-colors">Leads</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 space-y-12">
+        <h1 class="text-4xl font-bold mb-8">Performance & History</h1>
+
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 rounded-3xl border border-white/10 shadow-xl bg-white/5">
+                <p class="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">Total Sent</p>
+                <div class="flex items-end gap-2">
+                    <h2 id="statTotalSent" class="text-3xl font-bold">0</h2>
+                    <span class="text-gray-500 text-xs mb-1">messages</span>
+                </div>
+            </div>
+            <div class="glass-panel p-6 rounded-3xl border border-white/10 shadow-xl bg-white/5">
+                <p class="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">Success Rate</p>
+                <div class="flex items-end gap-2">
+                    <h2 id="statSuccessRate" class="text-3xl font-bold">0%</h2>
+                    <div class="w-24 h-2 bg-white/5 rounded-full overflow-hidden mb-2">
+                        <div id="successProgress" class="h-full bg-green-500 transition-all duration-1000" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-panel p-6 rounded-3xl border border-white/10 shadow-xl bg-white/5">
+                <p class="text-gray-400 text-sm font-medium uppercase tracking-wider mb-2">Credits Remaining</p>
+                <div class="flex items-end gap-2">
+                    <h2 id="statCredits" class="text-3xl font-bold text-blue-400">0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Trend Chart -->
+        <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
+            <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                7-Day Messaging Trend
+            </h3>
+            <div class="h-64">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Recent Campaigns -->
+        <div class="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center px-8">
+                <h3 class="font-bold text-xl">Campaign Logs</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="px-8 py-5">Campaign Name</th>
+                            <th class="px-8 py-5 text-center">Status</th>
+                            <th class="px-8 py-5 text-center">Contacts</th>
+                            <th class="px-8 py-5 text-center text-green-400">Success</th>
+                            <th class="px-8 py-5 text-center text-red-400">Fail</th>
+                            <th class="px-8 py-5 text-center">Date</th>
+                            <th class="px-8 py-5 text-right">Report</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTableBody" class="divide-y divide-white/5">
+                        <!-- Campaigns injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
+            <!-- Credit Transactions -->
+            <div class="space-y-6">
+                <h3 class="font-bold text-xl px-2">Credit Activity</h3>
+                <div id="creditHistoryList" class="space-y-3">
+                    <!-- Transactions here -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        async function loadStats() {
+            try {
+                const response = await fetch('/campaigns/stats');
+                const stats = await response.json();
+                
+                document.getElementById('statTotalSent').textContent = stats.total_sent.toLocaleString();
+                document.getElementById('statSuccessRate').textContent = stats.success_rate + '%';
+                document.getElementById('successProgress').style.width = stats.success_rate + '%';
+                document.getElementById('statCredits').textContent = stats.credits_remaining;
+
+                renderChart(stats.recent_trend);
+            } catch (err) { console.error("Stats Error:", err); }
+        }
+
+        async function loadCampaigns() {
+            try {
+                const response = await fetch('/campaigns/');
+                const data = await response.json();
+                renderCampaigns(data);
+            } catch (err) { console.error("Campaigns Error:", err); }
+        }
+
+        async function loadCredits() {
+            try {
+                const response = await fetch('/campaigns/credits/history');
+                const history = await response.json();
+                renderCreditHistory(history);
+            } catch (err) { console.error("Credits Error:", err); }
+        }
+
+        function renderCampaigns(campaigns) {
+            const body = document.getElementById('historyTableBody');
+            body.innerHTML = campaigns.map(c => `
+                <tr class="hover:bg-white/[0.02] transition-colors">
+                    <td class="px-8 py-5">
+                        <div class="font-bold text-white">${c.name}</div>
+                        <div class="text-[10px] text-gray-500 font-mono mt-1">${c.public_id}</div>
+                    </td>
+                    <td class="px-8 py-5 text-center">
+                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${
+                            c.status === 'completed' ? 'bg-green-500/10 text-green-400' : 
+                            c.status === 'sending' ? 'bg-blue-500/10 text-blue-400 animate-pulse' : 
+                            'bg-orange-500/10 text-orange-400'
+                        }">${c.status}</span>
+                    </td>
+                    <td class="px-8 py-5 text-center font-bold text-gray-300">${c.total_contacts}</td>
+                    <td class="px-8 py-5 text-center text-green-400 font-bold">${c.success_count}</td>
+                    <td class="px-8 py-5 text-center text-red-400 font-bold">${c.failure_count}</td>
+                    <td class="px-8 py-5 text-center text-sm text-gray-500">${new Date(c.created_at).toLocaleDateString()}</td>
+                    <td class="px-8 py-5 text-right">
+                        <a href="/campaigns/${c.id}/report/pdf" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600/10 text-blue-400 hover:bg-blue-600 hover:text-white transition-all text-xs font-bold border border-blue-500/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            PDF
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderCreditHistory(items) {
+            const list = document.getElementById('creditHistoryList');
+            list.innerHTML = items.map(i => `
+                <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-full ${i.amount > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'} flex items-center justify-center font-bold">
+                            ${i.amount > 0 ? '+' : ''}
+                        </div>
+                        <div>
+                            <div class="text-sm font-medium">${i.description || i.type}</div>
+                            <div class="text-[10px] text-gray-500">${new Date(i.created_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="font-bold ${i.amount > 0 ? 'text-green-400' : 'text-red-400'}">${i.amount}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderChart(trendData) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trendData.map(d => d.date),
+                    datasets: [{
+                        label: 'Successful Messages',
+                        data: trendData.map(d => d.count),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointBorderColor: '#3b82f6',
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                            ticks: { color: 'rgba(255, 255, 255, 0.4)' }
+                        },
+                        x: { 
+                            grid: { display: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.4)' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#0f172a',
+                            titleColor: '#fff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: 'rgba(255, 255, 255, 0.1)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    }
+                }
+            });
+        }
+
+        loadStats();
+        loadCampaigns();
+        loadCredits();
+    </script>
+</body>
+</html>

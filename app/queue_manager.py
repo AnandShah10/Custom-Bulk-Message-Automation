@@ -3,6 +3,11 @@ import time
 import threading
 import queue
 import logging
+import os
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+from app.models import Campaign, CampaignLog
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +25,7 @@ class WasenderQueue:
     def enqueue(self, payload: dict, api_key: str):
         payload["_api_key"] = api_key
         payload["_enqueued_at"] = time.time()
+        # Keep internal metadata keys like _api_key, user_id, campaign_id
         self.queue.put(payload)
         return True
 
@@ -40,13 +46,22 @@ class WasenderQueue:
             "Content-Type": "application/json",
         }
         
-        # Clean internal keys
-        send_payload = {k: v for k, v in payload.items() if not k.startswith("_")}
+        # Clean internal keys for the external API but keep them for our logging
+        send_payload = {k: v for k, v in payload.items() if not k.startswith("_") and k not in ["user_id", "campaign_id"]}
         logger.info("[SEND] Sending payload to API: %s", send_payload)
+        
+        campaign_id = payload.get("campaign_id")
+        user_id = payload.get("user_id")
+        to_phone = payload.get("to")
+
+        db: Session = SessionLocal()
         
         attempt = 0
         delay = 1.0
         max_attempts = payload.get("_max_retries", self.max_retries)
+        
+        success = False
+        error_msg = None
 
         while attempt < max_attempts:
             attempt += 1
@@ -54,13 +69,13 @@ class WasenderQueue:
                 r = self.session.post(self.api_base, json=send_payload, headers=headers, timeout=15)
                 status = r.status_code
                 if status < 300:
-                    logger.info("[SUCCESS] Message sent to %s (attempt %d).", payload.get("to"), attempt)
-                    if self.pause_after_success:
-                        time.sleep(self.pause_after_success)
-                    return
+                    logger.info("[SUCCESS] Message sent to %s (attempt %d).", to_phone, attempt)
+                    success = True
+                    break # Success!
                 
+                error_msg = f"HTTP {status}: {r.text[:200]}"
                 if status == 429:
-                    logger.warning("[RATE-LIMIT] Rate limited sending to %s. Retrying in %ds", payload.get("to"), int(delay))
+                    logger.warning("[RATE-LIMIT] Rate limited sending to %s. Retrying in %ds", to_phone, int(delay))
                     time.sleep(delay)
                     delay = min(delay * 2, 30)
                     continue
@@ -71,14 +86,52 @@ class WasenderQueue:
                     delay = min(delay * 2, 30)
                     continue
 
-                logger.error("Failed to send to %s: status=%s, resp=%s", payload.get("to"), status, r.text[:400])
-                return
-            except requests.exceptions.RequestException as e:
-                logger.warning("Network error sending to %s: %s. Retrying in %ds", payload.get("to"), e, int(delay))
+                logger.error("Failed to send to %s: status=%s, resp=%s", to_phone, status, r.text[:400])
+                break # Non-retryable error
+            except Exception as e:
+                error_msg = str(e)
+                logger.warning("Error sending to %s: %s. Retrying in %ds", to_phone, e, int(delay))
                 time.sleep(delay)
                 delay = min(delay * 2, 30)
 
-        logger.error("[FAILED] Giving up after %d attempts for %s", max_attempts, payload.get("to"))
+        # Logging to Campaign Database
+        if campaign_id:
+            try:
+                # Log detail
+                log_entry = CampaignLog(
+                    campaign_id=campaign_id,
+                    phone=to_phone,
+                    status="success" if success else "failure",
+                    error_message=None if success else error_msg
+                )
+                db.add(log_entry)
+                
+                # Update Campaign totals
+                campaign = db.query(Campaign).filter(Campaign.id == campaign_id).first()
+                if campaign:
+                    campaign.processed_count += 1
+                    if success:
+                        campaign.success_count += 1
+                    else:
+                        campaign.failure_count += 1
+                    
+                    # If finished, update status and timestamp
+                    if campaign.processed_count >= campaign.total_contacts:
+                        campaign.status = "completed"
+                        campaign.completed_at = datetime.now()
+                
+                db.commit()
+            except Exception as ex:
+                logger.error("Failed to update campaign DB: %s", ex)
+                db.rollback()
+            finally:
+                db.close()
+
+        if success and self.pause_after_success:
+            time.sleep(self.pause_after_success)
+        
+        if not success:
+            logger.error("[FAILED] Giving up after %d attempts for %s", max_attempts, to_phone)
 
 # Global instance
 SEND_QUEUE = WasenderQueue(api_base="https://www.wasenderapi.com", max_retries=5, pause_after_success=0.4)

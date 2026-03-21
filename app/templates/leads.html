@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Leads | CBMS Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        #toast-container {
+            position: fixed !important;
+            top: 24px !important;
+            right: 24px !important;
+            z-index: 10000 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            pointer-events: none !important;
+        }
+
+        .toast {
+            pointer-events: auto !important;
+            min-width: 320px !important;
+            max-width: 420px !important;
+            padding: 12px !important;
+            border-radius: 20px !important;
+            background: rgba(15, 23, 42, 0.85) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6) !important;
+            color: white !important;
+            display: flex !important;
+            align-items: flex-start !important;
+            gap: 12px !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transform: translateX(120%) scale(0.9) !important;
+            opacity: 0 !important;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
+
+        .toast.show {
+            transform: translateX(0) scale(1) !important;
+            opacity: 1 !important;
+        }
+
+        .toast-icon-container {
+            padding: 10px !important;
+            border-radius: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+        }
+
+        .toast-success .toast-icon-container {
+            background: rgba(16, 185, 129, 0.2) !important;
+            color: #34d399 !important;
+        }
+
+        .toast-error .toast-icon-container {
+            background: rgba(239, 68, 68, 0.2) !important;
+            color: #f87171 !important;
+        }
+
+        .toast-info .toast-icon-container {
+            background: rgba(59, 130, 246, 0.2) !important;
+            color: #60a5fa !important;
+        }
+
+        .toast-content {
+            flex: 1 !important;
+            padding: 6px 4px 6px 0 !important;
+        }
+
+        .toast-title {
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            color: #f8fafc !important;
+            margin-bottom: 2px !important;
+            display: block !important;
+        }
+
+        .toast-message {
+            font-size: 0.85rem !important;
+            color: #cbd5e1 !important;
+            line-height: 1.4 !important;
+            display: block !important;
+        }
+
+        .toast-progress {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            height: 3px !important;
+            background: #3b82f6 !important;
+            width: 100% !important;
+            transform-origin: left !important;
+            animation: toastProgress 5s linear forwards !important;
+        }
+
+        .toast-success .toast-progress {
+            background: #10b981 !important;
+        }
+
+        .toast-error .toast-progress {
+            background: #ef4444 !important;
+        }
+
+        @keyframes toastProgress {
+            from {
+                transform: scaleX(1);
+            }
+
+            to {
+                transform: scaleX(0);
+            }
+        }
+
+        @keyframes toastSlideOut {
+            to {
+                transform: translateX(120%) scale(0.9);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: toastSlideOut 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]"></div>
+    </div>
+    <div id="toast-container"></div>
+
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="/dashboard" class="flex items-center gap-2 group">
+                <div class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                </div>
+                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+            </a>
+            <div class="flex items-center gap-4">
+                <div class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-500/30">Credits: {{ user.credits or 0 }}</div>
+                <a href="/dashboard" class="text-sm text-gray-400 hover:text-white transition-colors">Dashboard</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 space-y-8">
+        <div class="flex flex-col md:flex-row justify-between items-end gap-6">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">Lead Management</h1>
+                <p class="text-gray-400">Organize your contacts into targeted categories for your campaigns.</p>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="document.getElementById('importModal').classList.remove('hidden')" class="bg-white/5 border border-white/10 hover:bg-white/10 px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    Import CSV/Excel
+                </button>
+                <button onclick="document.getElementById('addModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    Add Lead
+                </button>
+            </div>
+        </div>
+
+        <!-- Leads Table Section -->
+        <div class="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 class="font-bold text-lg">Stored Contacts</h3>
+                <div class="relative w-64">
+                    <input type="text" id="leadSearch" placeholder="Search leads..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-white/5 text-gray-400 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-4 font-semibold">Contact</th>
+                            <th class="px-6 py-4 font-semibold">Email</th>
+                            <th class="px-6 py-4 font-semibold">Category</th>
+                            <th class="px-6 py-4 font-semibold">Status</th>
+                            <th class="px-6 py-4 font-semibold">Added On</th>
+                            <th class="px-6 py-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leadsTableBody" class="divide-y divide-white/5">
+                        <!-- Leads injected here -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="loadingState" class="p-12 text-center text-gray-500">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mb-4"></div>
+                <p>Loading your leads...</p>
+            </div>
+            <div id="emptyState" class="hidden p-20 text-center">
+                <div class="text-5xl mb-4">📭</div>
+                <h4 class="text-xl font-bold mb-2">No Leads Found</h4>
+                <p class="text-gray-400">Start by adding leads manually or importing a list.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Lead Modal -->
+    <div id="addModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentNode.classList.add('hidden')"></div>
+        <div class="glass-panel w-full max-w-md rounded-3xl p-8 border border-white/10 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+            <h2 class="text-2xl font-bold mb-6">Add New Lead</h2>
+            <form id="addLeadForm" class="space-y-4">
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400 ml-1">Phone Number (with Country Code)</label>
+                    <input type="text" name="phone" required placeholder="example: 1234567890" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400 ml-1">Name (Optional)</label>
+                    <input type="text" name="name" placeholder="John Doe" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+                <div class="space-y-2">
+                    <label class="text-sm font-medium text-gray-400 ml-1">Category</label>
+                    <input type="text" name="category" value="General" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button type="button" onclick="document.getElementById('addModal').classList.add('hidden')" class="flex-1 px-6 py-3 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all font-medium">Cancel</button>
+                    <button type="submit" class="flex-1 px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition-all font-bold shadow-lg shadow-blue-600/20">Save Lead</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div id="importModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentNode.classList.add('hidden')"></div>
+        <div class="glass-panel w-full max-w-md rounded-3xl p-8 border border-white/10 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300">
+            <h2 class="text-2xl font-bold mb-2">Import Contacts</h2>
+            <p class="text-sm text-gray-400 mb-6">Upload an Excel or CSV file. Ensure it has a **Phone** column.</p>
+            <form id="importLeadsForm" class="space-y-6">
+                <div class="border-2 border-dashed border-white/10 rounded-2xl p-8 text-center hover:border-blue-500/50 transition-all cursor-pointer relative group">
+                    <input type="file" name="file" accept=".xlsx, .csv" required class="absolute inset-0 opacity-0 cursor-pointer z-10">
+                    <div class="space-y-3 pointer-events-none">
+                        <div class="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mx-auto text-blue-400 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                        </div>
+                        <p id="importFileName" class="text-gray-400 text-sm">Click to select file</p>
+                    </div>
+                </div>
+                <button type="submit" id="importBtn" class="w-full px-6 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 transition-all font-bold shadow-lg shadow-blue-600/20">Start Import</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        async function loadLeads() {
+            try {
+                const response = await fetch('/leads/');
+                const leads = await response.json();
+                renderLeads(leads);
+            } catch (err) {
+                console.error("Failed to load leads:", err);
+            }
+        }
+
+        function renderLeads(leads) {
+            const container = document.getElementById('leadsTableBody');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+            
+            loading.classList.add('hidden');
+            container.innerHTML = '';
+            
+            if (leads.length === 0) {
+                empty.classList.remove('hidden');
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            leads.forEach(lead => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-white/[0.02] transition-colors group';
+                
+                const statusColors = {
+                    'New': 'bg-blue-500/10 text-blue-400',
+                    'Contacted': 'bg-purple-500/10 text-purple-400',
+                    'Converted': 'bg-green-500/10 text-green-400',
+                    'Lost': 'bg-red-500/10 text-red-400'
+                };
+                const currentStatusColor = statusColors[lead.status] || 'bg-gray-500/10 text-gray-400';
+
+                row.innerHTML = `
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500/20 to-purple-500/20 flex items-center justify-center font-bold text-blue-400 font-inter">
+                                ${(lead.name || lead.phone)[0].toUpperCase()}
+                            </div>
+                            <div>
+                                <div class="font-bold text-white">${lead.name || 'Anonymous'}</div>
+                                <div class="text-xs text-gray-500 font-mono">${lead.phone}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-300">${lead.email || '-'}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-md bg-blue-500/10 text-blue-400 text-[10px] font-bold uppercase tracking-wider border border-blue-500/20">${lead.category}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full ${currentStatusColor} text-[10px] font-black uppercase tracking-widest border border-white/5">
+                            ${lead.status || 'New'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">${new Date(lead.created_at).toLocaleDateString()}</td>
+                    <td class="px-6 py-4 text-right">
+                        <div class="inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            ${lead.status !== 'Converted' ? `
+                                <button onclick="updateLeadStatus(${lead.id}, 'Converted')" class="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition-all text-[10px] font-bold border border-green-500/20">
+                                    CONVERT
+                                </button>
+                            ` : ''}
+                            <button onclick="deleteLead(${lead.id})" class="p-2 text-red-500/50 hover:text-red-400 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        async function updateLeadStatus(id, newStatus) {
+            const formData = new FormData();
+            formData.append('status', newStatus);
+            try {
+                const response = await fetch(`/leads/${id}/status`, { 
+                    method: 'PATCH', 
+                    body: formData 
+                });
+                if (response.ok) {
+                    showToast('Lead Updated', `Status changed to ${newStatus}`, 'success');
+                    loadLeads();
+                }
+            } catch (err) { console.error("Update failed", err); }
+        }
+
+        function showToast(title, message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+
+            const icons = {
+                success: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`,
+                error: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>`,
+                info: `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>`
+            };
+
+            toast.innerHTML = `
+                <div class="toast-icon-container">
+                    ${icons[type]}
+                </div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <div class="toast-progress"></div>
+            `;
+
+            container.appendChild(toast);
+
+            // Force reflow
+            toast.offsetHeight;
+            toast.classList.add('show');
+
+            const removeToast = () => {
+                toast.classList.add('hiding');
+                setTimeout(() => toast.remove(), 500);
+            };
+
+            const autoTimeout = setTimeout(removeToast, 5000);
+
+            toast.onclick = () => {
+                clearTimeout(autoTimeout);
+                removeToast();
+            };
+        }
+
+        async function deleteLead(id) {
+            if (!confirm("Are you sure you want to delete this lead?")) return;
+            try {
+                const response = await fetch(`/leads/${id}`, { method: 'DELETE' });
+                if (response.ok) loadLeads();
+            } catch (err) { showToast("Error", "Failed to delete lead", "error"); }
+        }
+
+        document.getElementById('addLeadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch('/leads/add', { method: 'POST', body: formData });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    document.getElementById('addModal').classList.add('hidden');
+                    e.target.reset();
+                    loadLeads();
+                } else { showToast("Error", res.message, "error"); }
+            } catch (err) { showToast("Error", "Request failed", "error"); }
+        };
+
+        document.getElementById('importLeadsForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('importBtn');
+            btn.disabled = true; btn.textContent = 'Importing...';
+            const formData = new FormData(e.target);
+            try {
+                const response = await fetch('/leads/import', { method: 'POST', body: formData });
+                const res = await response.json();
+                if (response.ok) {
+                    showToast("Import Success", `${res.imported} leads added.`, "success");
+                    document.getElementById('importModal').classList.add('hidden');
+                    loadLeads();
+                } else { showToast("Import Failed", res.detail || "An error occurred", "error"); }
+            } catch (err) { showToast("Network Error", "Check your connection", "error"); }
+            finally { btn.disabled = false; btn.textContent = 'Start Import'; }
+        };
+
+        const fileInput = document.querySelector('input[type="file"]');
+        fileInput.onchange = (e) => {
+            if (e.target.files.length > 0) document.getElementById('importFileName').textContent = e.target.files[0].name;
+        };
+
+        loadLeads();
+    </script>
+</body>
+</html>

@@ -9,6 +9,9 @@ from app.auth import create_access_token
 from dotenv import load_dotenv
 
 load_dotenv()
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+import logging
+logger = logging.getLogger(__name__)
 
 router = APIRouter(tags=["OAuth"])
 
@@ -39,12 +42,21 @@ oauth.register(
 @router.get("/auth/login/google")
 async def login_google(request: Request):
     """Redirects the user to Google's consent screen."""
-    redirect_uri = request.url_for('auth_google_callback')
+    # Try to use BASE_URL for consistency, fallback to request URL
+    base_url = os.getenv("BASE_URL")
+    if base_url:
+        redirect_uri = f"{base_url.rstrip('/')}/auth/google/callback"
+    else:
+        redirect_uri = request.url_for('auth_google_callback')
+        
+    logger.info(f"Initiating Google OAuth redirect to: {redirect_uri}")
+    logger.info(f"Session content BEFORE redirect: {list(request.session.keys())}")
     return await oauth.google.authorize_redirect(request, redirect_uri, prompt='select_account')
 
 @router.get("/auth/google/callback")
 async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
     """Handles the response from Google after consent."""
+    logger.info(f"Callback received. Session keys: {list(request.session.keys())}")
     try:
         token = await oauth.google.authorize_access_token(request)
         user_info = token.get('userinfo')
@@ -95,7 +107,13 @@ async def auth_google_callback(request: Request, db: Session = Depends(get_db)):
 @router.get("/auth/login/microsoft")
 async def login_microsoft(request: Request):
     """Redirects the user to Microsoft's consent screen."""
-    redirect_uri = request.url_for('auth_microsoft_callback')
+    base_url = os.getenv("BASE_URL")
+    if base_url:
+        redirect_uri = f"{base_url.rstrip('/')}/auth/microsoft/callback"
+    else:
+        redirect_uri = request.url_for('auth_microsoft_callback')
+        
+    logger.info(f"Initiating Microsoft OAuth redirect to: {redirect_uri}")
     return await oauth.microsoft.authorize_redirect(request, redirect_uri, prompt='select_account')
 
 @router.get("/auth/microsoft/callback")

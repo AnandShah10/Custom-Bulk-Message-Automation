@@ -160,6 +160,16 @@
                 </a>
             </div>
             <div class="flex items-center gap-4">
+                <div class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-500/30 flex items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Credits: <span id="navCredits">{{ user.credits or 0 }}</span></span>
+                    </div>
+                    <button onclick="document.getElementById('pricingModal').classList.remove('hidden')" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] hover:bg-blue-500 transition-all font-black shadow-lg shadow-blue-600/20">TOP UP</button>
+                </div>
+
                 {% if user.role == 'admin' %}
                 <a href="/admin"
                     class="bg-red-500/20 text-red-400 hover:bg-red-500/30 px-3 py-1.5 rounded-lg text-sm font-bold transition-colors border border-red-500/30">Admin
@@ -185,6 +195,12 @@
                         <a href="/sessions"
                             class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">WhatsApp
                             Session</a>
+                        <a href="/leads"
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Manage
+                            Leads</a>
+                        <a href="/history"
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Campaign
+                            History</a>
                         <a href="/profile"
                             class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security
                             Settings</a>
@@ -251,6 +267,22 @@
             <form id="campaignForm" class="space-y-8">
                 <input type="hidden" name="message_type" id="hiddenMessageType" value="text" />
 
+                <!-- Recipient Source Toggle -->
+                <div class="input-group">
+                    <label class="block text-sm font-medium text-gray-300 mb-4 tracking-wide uppercase text-xs">Recipients Source</label>
+                    <div class="grid grid-cols-2 gap-4 p-1.5 bg-white/5 rounded-2xl border border-white/10">
+                        <button type="button" id="sourceExcel" class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            Direct Upload
+                        </button>
+                        <button type="button" id="sourceLeads" class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm text-gray-400 hover:bg-white/5 hover:text-gray-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                            Saved Leads
+                        </button>
+                    </div>
+                    <input type="hidden" name="source_type" id="hiddenSourceType" value="excel">
+                </div>
+
                 <!-- API Key (Always visible) -->
                 <div class="input-group">
                     <label class="block text-sm font-medium text-gray-300 mb-2">WASender API Key</label>
@@ -299,6 +331,21 @@
                                 contain 'Phone' column)</p>
                         </div>
                     </div>
+                </div>
+
+                <!-- Saved Leads Selection (Hidden by default) -->
+                <div id="leadsSelectionArea" class="input-group hidden animate-in fade-in zoom-in duration-300">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Select Lead Category <span class="text-red-400">*</span></label>
+                    <div class="relative">
+                        <select name="lead_category" id="leadCategorySelect" class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
+                            <option value="all" class="bg-[#1e293b]">All Leads</option>
+                            <option value="General" class="bg-[#1e293b]">General</option>
+                        </select>
+                        <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                    <p class="mt-2 text-xs text-gray-500 italic" id="leadStatsDisplay">0 leads available in this category.</p>
                 </div>
 
                 <!-- ===== TEXT MESSAGE BLOCK ===== -->
@@ -654,6 +701,59 @@
 
         let selectedSequence = []; // Tracks ordered intent
 
+        // Recipient Source Logic
+        const sourceExcelBtn = document.getElementById('sourceExcel');
+        const sourceLeadsBtn = document.getElementById('sourceLeads');
+        const hiddenSourceType = document.getElementById('hiddenSourceType');
+        const excelUploadArea = document.querySelector('.file-drop-area').parentNode; // The input-group
+        const leadsSelectionArea = document.getElementById('leadsSelectionArea');
+        const leadCategorySelect = document.getElementById('leadCategorySelect');
+        const leadStatsDisplay = document.getElementById('leadStatsDisplay');
+
+        async function updateLeadStats() {
+            try {
+                const response = await fetch('/leads/');
+                const leads = await response.json();
+                
+                // Get unique categories
+                const categories = ['all', ...new Set(leads.map(l => l.category).filter(c => c))];
+                
+                // Update dropdown
+                const currentVal = leadCategorySelect.value;
+                leadCategorySelect.innerHTML = categories.map(c => 
+                    `<option value="${c}" ${c === currentVal ? 'selected' : ''} class="bg-[#1e293b]">${c === 'all' ? 'All Leads' : c}</option>`
+                ).join('');
+
+                // Update count
+                const selected = leadCategorySelect.value;
+                const count = selected === 'all' ? leads.length : leads.filter(l => l.category === selected).length;
+                leadStatsDisplay.textContent = `${count} leads available in this category.`;
+            } catch (err) {
+                console.error("Failed to fetch leads:", err);
+            }
+        }
+
+        sourceExcelBtn.addEventListener('click', () => {
+            hiddenSourceType.value = 'excel';
+            sourceExcelBtn.className = 'flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20';
+            sourceLeadsBtn.className = 'flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm text-gray-400 hover:bg-white/5 hover:text-gray-200';
+            excelUploadArea.classList.remove('hidden');
+            leadsSelectionArea.classList.add('hidden');
+            fileInput.required = true;
+        });
+
+        sourceLeadsBtn.addEventListener('click', async () => {
+            hiddenSourceType.value = 'saved_leads';
+            sourceLeadsBtn.className = 'flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20';
+            sourceExcelBtn.className = 'flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm text-gray-400 hover:bg-white/5 hover:text-gray-200';
+            excelUploadArea.classList.add('hidden');
+            leadsSelectionArea.classList.remove('hidden');
+            fileInput.required = false;
+            await updateLeadStats();
+        });
+
+        leadCategorySelect.addEventListener('change', updateLeadStats);
+
         // File upload UI
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
@@ -978,7 +1078,63 @@
     </script>
     {% include "support_widget.html" %}
     <script src="/static/support_bot.js"></script>
-    <div id="toast-container"></div>
+    </div>
+
+    <!-- Pricing Modal -->
+    <div id="pricingModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentNode.classList.add('hidden')"></div>
+        <div class="glass-panel w-full max-w-4xl rounded-[40px] p-10 border border-white/10 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh]">
+            <div class="text-center mb-10">
+                <h2 class="text-3xl font-black mb-2">Refill Your Credits</h2>
+                <p class="text-gray-400">Choose a pack to continue your marketing campaigns.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- Packs -->
+                <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-blue-500/50 transition-all group">
+                    <h4 class="text-gray-400 font-bold mb-2">Starter</h4>
+                    <div class="text-4xl font-black mb-4">1,000</div>
+                    <div class="text-xl font-bold mb-6">$10.00</div>
+                    <button onclick="topUpCredits(1000)" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-blue-600 group-hover:border-blue-600 transition-all font-bold">Buy Now</button>
+                </div>
+                <div class="bg-blue-600/10 border border-blue-500/50 p-6 rounded-3xl text-center relative group">
+                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">Best Value</div>
+                    <h4 class="text-blue-400 font-bold mb-2">Pro</h4>
+                    <div class="text-4xl font-black mb-4">6,000</div>
+                    <div class="text-xl font-bold mb-6">$50.00</div>
+                    <button onclick="topUpCredits(6000)" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition-all font-bold shadow-lg shadow-blue-600/20">Buy Now</button>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-purple-500/50 transition-all group">
+                    <h4 class="text-gray-400 font-bold mb-2">Growth</h4>
+                    <div class="text-4xl font-black mb-4">15,000</div>
+                    <div class="text-xl font-bold mb-6">$100.00</div>
+                    <button onclick="topUpCredits(15000)" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-purple-600 group-hover:border-purple-600 transition-all font-bold">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function topUpCredits(amount) {
+            const confirmPurchase = confirm(`Are you sure you want to purchase ${amount} credits? (Mock Transaction)`);
+            if (!confirmPurchase) return;
+            
+            try {
+                const response = await fetch('/campaigns/credits/topup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: amount })
+                });
+                
+                const res = await response.json();
+                if (res.status === 'success') {
+                    showToast('Credits Added', `Successfully added ${amount} credits to your account.`, 'success');
+                    document.getElementById('pricingModal').classList.add('hidden');
+                    const nav = document.getElementById('navCredits');
+                    if (nav) nav.textContent = res.new_balance;
+                }
+            } catch (err) { showToast('Purchase Error', 'Failed to add credits.', 'error'); }
+        }
+    </script>
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 import os
 import logging
 from logging.handlers import RotatingFileHandler
+import datetime as dt
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request, UploadFile, File, Form, HTTPException, Depends
 from fastapi.templating import Jinja2Templates
@@ -12,10 +13,27 @@ from app.queue_manager import SEND_QUEUE
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import HTMLResponse
 from app.database import engine, Base
-from app.routers import auth, mfa, oauth, users, admin, sessions, support
+from app.routers import auth, mfa, oauth, users, admin, sessions, support, leads, campaigns
+from app.models import User, Lead, Campaign, CampaignLog, CreditTransaction, SystemLog
 from app.auth import get_current_user, get_current_active_user_or_401
-from starlette.responses import RedirectResponse
+from sqlalchemy.orm import Session
+from app.database import engine, Base, SessionLocal, get_db
+from starlette.responses import RedirectResponse, StreamingResponse
 from starlette.middleware.sessions import SessionMiddleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+from app.reporting import generate_campaign_pdf
+
+CREDIT_COSTS = {
+    "text": 1,
+    "image": 2,
+    "video": 5,
+    "document": 3,
+    "audio": 2,
+    "location": 2,
+    "contact": 1,
+    "sticker": 1,
+    "poll": 5
+}
 
 # Create all DB tables
 Base.metadata.create_all(bind=engine)
@@ -51,7 +69,10 @@ app = FastAPI(title="CBMS Pro API")
 
 # Add SessionMiddleware (required for OAuth state management)
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "development-secret-key")
-app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY)
+app.add_middleware(SessionMiddleware, secret_key=SECRET_KEY, same_site="lax", https_only=False)
+
+# Add ProxyHeadersMiddleware to handle ngrok/proxies correctly
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 
 templates = Jinja2Templates(directory="app/templates")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -64,6 +85,8 @@ app.include_router(users.router)
 app.include_router(admin.router)
 app.include_router(sessions.router)
 app.include_router(support.router)
+app.include_router(leads.router)
+app.include_router(campaigns.router)
 
 @app.on_event("startup")
 async def on_startup():
@@ -95,6 +118,20 @@ async def on_startup():
             db.execute(text("ALTER TABLE users ADD COLUMN mfa_type VARCHAR DEFAULT 'app'"))
             print("Added mfa_type column")
 
+        if "credits" not in columns:
+            db.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 0"))
+            print("Added credits column")
+
+        # Create new tables if they don't exist
+        # Base.metadata.create_all is already called at the top, 
+        # but for existing DBs we need to ensure they are created.
+        Base.metadata.create_all(bind=engine)
+        print("Ensured all marketing tables exist")
+
+        db.commit()
+
+        # Set default credits for admin if they have 0
+        db.execute(text("UPDATE users SET credits = 1000 WHERE role = 'admin' AND (credits = 0 OR credits IS NULL)"))
         db.commit()
 
         # Backfill UUIDs for existing users who don't have one
@@ -206,6 +243,63 @@ async def sessions_page(request: Request, user = Depends(get_current_active_user
     """The WhatsApp session management page."""
     return templates.TemplateResponse("sessions.html", {"request": request, "user": user})
 
+@app.get("/leads", response_class=HTMLResponse)
+async def leads_page(request: Request, user = Depends(get_current_active_user_or_401)):
+    """The Lead management page."""
+    return templates.TemplateResponse("leads.html", {"request": request, "user": user})
+
+@app.get("/history", response_class=HTMLResponse)
+async def history_page(request: Request, user = Depends(get_current_active_user_or_401)):
+    """The Campaign History and Analytics page."""
+    return templates.TemplateResponse("history.html", {"request": request, "user": user})
+
+@app.get("/campaigns/{campaign_id}/report/pdf")
+async def download_campaign_report(
+    campaign_id: int, 
+    user = Depends(get_current_active_user_or_401),
+    db: Session = Depends(get_db)
+):
+    """Generates and downloads a PDF report for a campaign."""
+    campaign = db.query(Campaign).filter(Campaign.id == campaign_id, Campaign.user_id == user.id).first()
+    if not campaign:
+        raise HTTPException(status_code=404, detail="Campaign not found")
+    
+    logs = db.query(CampaignLog).filter(CampaignLog.campaign_id == campaign.id).all()
+    
+    pdf_content = generate_campaign_pdf(campaign, logs)
+    
+    # Handle both fpdf (str) and fpdf2 (bytes/bytearray)
+    if isinstance(pdf_content, str):
+        pdf_content = pdf_content.encode('latin-1')
+    
+    headers = {
+        'Content-Disposition': f'attachment; filename="Campaign_Report_{campaign.id}.pdf"'
+    }
+    return StreamingResponse(io.BytesIO(pdf_content), media_type="application/pdf", headers=headers)
+
+@app.post("/campaigns/credits/topup")
+async def topup_credits(
+    request: Request,
+    user = Depends(get_current_active_user_or_401),
+    db: Session = Depends(get_db)
+):
+    """Mock endpoint for adding credits via the UI."""
+    data = await request.json()
+    amount = data.get("amount", 0)
+    if amount <= 0:
+        raise HTTPException(status_code=400, detail="Invalid amount")
+    
+    user.credits += amount
+    transaction = CreditTransaction(
+        user_id=user.id,
+        amount=amount,
+        type="purchase",
+        description=f"Top-up: {amount} Credits (Mock)"
+    )
+    db.add(transaction)
+    db.commit()
+    return {"status": "success", "new_balance": user.credits}
+
 @app.post("/send-campaign")
 async def handle_form(
     user = Depends(get_current_active_user_or_401),
@@ -233,7 +327,10 @@ async def handle_form(
     poll_question: str = Form(None),
     poll_options: str = Form(None),
     poll_multi_select: bool = Form(False),
-    excel_file: UploadFile = File(...)
+    excel_file: UploadFile = File(None), # Optional if using saved leads
+    source_type: str = Form("excel"),
+    lead_category: str = Form("all"),
+    db: Session = Depends(get_db)
 ):
     try:
         # Priority: Form API Key > User's Session API Key > Master/Default API Key
@@ -250,29 +347,90 @@ async def handle_form(
         if not final_api_key:
             return {"error": "No API Key provided. Set WASENDER_API_KEY in .env or provide it in the form."}
 
-        content = await excel_file.read()
-        df = pd.read_excel(io.BytesIO(content))
+        if not final_api_key:
+            return {"error": "No API Key provided. Set WASENDER_API_KEY in .env or provide it in the form."}
 
-        if 'Phone' not in df.columns:
-            return {"error": "Excel must have a 'Phone' column"}
+        # Source Recipients
+        recipients = []
+        if source_type == "excel":
+            if not excel_file:
+                return {"error": "Excel file is required for Direct Upload source."}
+            content = await excel_file.read()
+            df = pd.read_excel(io.BytesIO(content))
+            if 'Phone' not in df.columns:
+                return {"error": "Excel must have a 'Phone' column"}
+            
+            # Filter valid phones
+            def is_valid_phone(p):
+                p_str = str(p).split('.')[0].strip().lower()
+                return p_str and p_str != 'nan'
+            
+            df = df[df['Phone'].apply(is_valid_phone)]
+            for _, row in df.iterrows():
+                phone = str(row['Phone']).split('.')[0].strip()
+                # Include all row data for formatting
+                recipients.append({"phone": phone, "metadata": row.to_dict()})
+        else:
+            # Saved Leads
+            query = db.query(Lead).filter(Lead.user_id == user.id)
+            if lead_category != "all":
+                query = query.filter(Lead.category == lead_category)
+            
+            db_leads = query.all()
+            for l in db_leads:
+                meta = json.loads(l.metadata_json) if l.metadata_json else {}
+                meta.update({"Phone": l.phone, "Name": l.name or ""})
+                recipients.append({"phone": l.phone, "metadata": meta})
+
+        contacts_reached = len(recipients)
+        if contacts_reached == 0:
+            return {"error": "No valid recipients found."}
         
-        # Filter valid phones first to get accurate count
-        def is_valid_phone(p):
-            p_str = str(p).split('.')[0].strip().lower()
-            return p_str and p_str != 'nan'
+        types = [t.strip() for t in message_type.split(',')]
+        
+        # Dynamic Credit Calculation
+        total_cost_per_contact = sum(CREDIT_COSTS.get(t, 1) for t in types if t)
+        total_cost = contacts_reached * total_cost_per_contact
 
-        df = df[df['Phone'].apply(is_valid_phone)]
-        contacts_reached = len(df)
+        # Credit Check
+        if user.role != "admin" and user.credits < total_cost:
+            return {"error": f"Insufficient credits. Required: {total_cost}, Available: {user.credits}"}
+
+        # Initialize Campaign
+        campaign_name = f"Campaign {excel_file.filename}" if source_type == "excel" else f"Campaign: {lead_category} ({dt.datetime.now().strftime('%Y-%m-%d %H:%M')})"
+        campaign = Campaign(
+            user_id=user.id,
+            name=campaign_name,
+            message_type=message_type,
+            total_contacts=contacts_reached,
+            status="queued"
+        )
+        db.add(campaign)
+        db.flush() 
+
+        # Deduct Credits
+        if user.role != "admin":
+            user.credits -= total_cost
+            transaction = CreditTransaction(
+                user_id=user.id,
+                amount=-total_cost,
+                type="usage",
+                description=f"Campaign: {campaign.name} (Cost: {total_cost} credits)"
+            )
+            db.add(transaction)
+        
+        db.commit()
+
         count = 0
-
-        for _, row in df.iterrows():
-            phone = str(row['Phone']).split('.')[0].strip()
+        for item in recipients:
+            phone = item["phone"]
+            row_data = item["metadata"]
             
             # Format text safely
             def format_text(txt):
                 if not txt: return ""
                 try:
-                    return str(txt).format(**row.to_dict()) if "{" in str(txt) else str(txt)
+                    return str(txt).format(**row_data) if "{" in str(txt) else str(txt)
                 except (KeyError, ValueError, TypeError):
                     return str(txt)
 
@@ -325,6 +483,10 @@ async def handle_form(
                         "options": options_list,
                         "multiSelect": poll_multi_select
                     }
+                
+                # Include campaign tracking in payload
+                payload["campaign_id"] = campaign.id
+                payload["user_id"] = user.id
                 
                 SEND_QUEUE.enqueue(payload, final_api_key)
                 count += 1
