@@ -12,7 +12,7 @@ from app.queue_manager import SEND_QUEUE
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import HTMLResponse
 from app.database import engine, Base
-from app.routers import auth, mfa, oauth, users, admin, sessions
+from app.routers import auth, mfa, oauth, users, admin, sessions, support
 from app.auth import get_current_user, get_current_active_user_or_401
 from starlette.responses import RedirectResponse
 from starlette.middleware.sessions import SessionMiddleware
@@ -63,6 +63,7 @@ app.include_router(oauth.router)
 app.include_router(users.router)
 app.include_router(admin.router)
 app.include_router(sessions.router)
+app.include_router(support.router)
 
 @app.on_event("startup")
 async def on_startup():

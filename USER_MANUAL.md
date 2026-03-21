@@ -2,17 +2,15 @@
 
 Welcome to the comprehensive guide for using CBMS Pro. This manual covers how to format your Excel files, connect your WhatsApp session, manage your profile, and launch campaigns.
 
-## 1. Setting up your Environment
+## 1. Getting Support
 
-### The `.env` File
-You can set up a default configuration so that the system works seamlessly for all users.
-1. Locate the file named `.env` in the main folder.
-2. Open it in a text editor (like Notepad).
-3. Ensure it contains the following keys:
-   - `WASENDER_PERSONAL_TOKEN`: Required for managing dynamic sessions.
-   - `WASENDER_API_KEY`: Default fallback key for messaging.
-   - `JWT_SECRET_KEY`: Secure string for session management.
-   - `BASE_URL`: The URL where your app is hosted (e.g., `http://localhost:8000`).
+If you have any questions while using CBMS Pro, you can use our built-in **Support Bot**.
+1. Click the **floating cat icon** in the bottom right corner of any page.
+2. Type your question (e.g., "How do I connect my WhatsApp?").
+3. The bot will provide instant instructions based on this manual.
+
+---
+
 
 ## 2. WhatsApp Session Management
 
@@ -88,4 +86,6 @@ Once you see the green success banner, you are free to close the browser. The sy
 ### Network Behaviors
 - The system places a deliberate, micro pause between successful hits to respect the WaSender API.
 - If a contact fails because it hit the rate limit (`HTTP 429`), the system automatically pauses and implements exponential backoff before cleanly retrying.
-- Check your local terminal/command prompt window if you wish to monitor real-time "Success" checks natively.
+
+---
+*For technical installation and developer documentation, please refer to the `README.md` file.*

@@ -1,0 +1,62 @@
+<!-- Support Bot Floating Widget -->
+<div id="support-bot-container" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-4 pointer-events-none">
+    
+    <!-- Chat Window -->
+    <div id="chat-window" class="w-[380px] h-[550px] bg-[#0f172a]/90 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl flex flex-col overflow-hidden opacity-0 scale-90 translate-y-10 invisible transition-all duration-300 pointer-events-auto origin-bottom-right">
+        <!-- Header -->
+        <div class="bg-blue-600/20 p-5 flex items-center justify-between border-b border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-sm">CBMS Support</h3>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Online Help</span>
+                    </div>
+                </div>
+            </div>
+            <button id="close-chat" class="p-2 hover:bg-white/5 rounded-lg text-gray-400 hover:text-white transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-5 space-y-4 scroll-smooth bg-gradient-to-b from-transparent to-blue-500/5">
+            <!-- Bot Message -->
+            <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center shrink-0 mt-1">
+                    <span class="text-xs">🤖</span>
+                </div>
+                <div class="bg-white/5 border border-white/10 p-3.5 rounded-2xl rounded-tl-none max-w-[85%]">
+                    <p class="text-sm text-gray-200 leading-relaxed">Hi! I'm your CBMS Pro assistant. How can I help you today?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white/5 border-t border-white/5">
+            <div class="relative flex items-center">
+                <input type="text" id="chat-input" placeholder="Type your question..." 
+                    class="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-5 pr-12 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all">
+                <button id="send-chat" class="absolute right-2 p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-500 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+            <p class="text-[10px] text-center text-gray-500 mt-2">Powered by Advanced GraphRAG</p>
+        </div>
+    </div>
+
+    <!-- Toggle Button -->
+    <button id="toggle-chat" class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/40 hover:scale-110 active:scale-95 transition-all duration-300 pointer-events-auto border border-white/20 group">
+        <svg id="icon-closed" class="w-7 h-7 text-white transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path>
+        </svg>
+        <svg id="icon-open" class="w-7 h-7 text-white absolute opacity-0 transition-opacity duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        </svg>
+    </button>
+</div>
