@@ -10,8 +10,23 @@ from datetime import datetime, timedelta
 router = APIRouter(prefix="/campaigns", tags=["campaigns"])
 
 @router.get("/")
-async def get_campaigns(db: Session = Depends(get_db), user: User = Depends(get_current_active_user_or_401)):
-    return db.query(Campaign).filter(Campaign.user_id == user.id).order_by(Campaign.created_at.desc()).all()
+async def get_campaigns(
+    page: int = 1,
+    size: int = 10,
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_active_user_or_401)
+):
+    query = db.query(Campaign).filter(Campaign.user_id == user.id)
+    total = query.count()
+    items = query.order_by(Campaign.created_at.desc()).offset((page - 1) * size).limit(size).all()
+    
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size
+    }
 
 @router.get("/stats")
 async def get_stats(db: Session = Depends(get_db), user: User = Depends(get_current_active_user_or_401)):
@@ -49,5 +64,20 @@ async def get_campaign_detail(campaign_id: int, db: Session = Depends(get_db), u
     }
 
 @router.get("/credits/history")
-async def get_credit_history(db: Session = Depends(get_db), user: User = Depends(get_current_active_user_or_401)):
-    return db.query(CreditTransaction).filter(CreditTransaction.user_id == user.id).order_by(CreditTransaction.created_at.desc()).limit(50).all()
+async def get_credit_history(
+    page: int = 1,
+    size: int = 10,
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_active_user_or_401)
+):
+    query = db.query(CreditTransaction).filter(CreditTransaction.user_id == user.id)
+    total = query.count()
+    items = query.order_by(CreditTransaction.created_at.desc()).offset((page - 1) * size).limit(size).all()
+    
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size
+    }

@@ -1,31 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CBMS Pro | Powerful Bulk Marketing Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
     <style>
-        body { font-family: 'Outfit', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .hero-gradient { background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15) 0%, rgba(15, 23, 42, 0) 70%); }
-        .gradient-text { background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        body {
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>
 </head>
+
 <body class="bg-[#0f172a] text-white selection:bg-blue-500/30 overflow-x-hidden">
     <!-- Background Effects -->
     <div class="fixed inset-0 hero-gradient -z-10 animate-pulse duration-[10s]"></div>
     <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px] -z-10"></div>
-    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px] -z-10">
+    </div>
 
     <!-- Nav -->
     <nav class="sticky top-0 z-50 border-b border-white/5 bg-[#0f172a]/80 backdrop-blur-xl">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="bg-blue-600 p-2 rounded-xl shadow-lg shadow-blue-500/20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
                 </div>
                 <span class="font-bold text-2xl tracking-tighter gradient-text">CBMS Pro</span>
             </div>
@@ -33,25 +56,33 @@
                 <a href="#features" class="hover:text-white transition-colors">Features</a>
                 <a href="#pricing" class="hover:text-white transition-colors">Pricing</a>
                 <a href="/login" class="hover:text-white transition-colors">Login</a>
-                <a href="/signup" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-lg shadow-blue-600/20">Get Started</a>
+                <a href="/signup"
+                    class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-full font-bold transition-all shadow-lg shadow-blue-600/20">Get
+                    Started</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="container mx-auto px-6 pt-24 pb-32 text-center relative">
-        <div class="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold mb-8 animate-bounce">
+        <div
+            class="inline-block px-4 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold mb-8 animate-bounce">
             🚀 Next-Gen Marketing Tool
         </div>
         <h1 class="text-6xl md:text-8xl font-black mb-8 tracking-tight leading-[1.1]">
             Scale Your Outreach <br> <span class="gradient-text">effortlessly.</span>
         </h1>
         <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed">
-            The all-in-one bulk messaging platform for modern marketers. Manage leads, track campaigns, and automate your workflow with beautiful analytics.
+            The all-in-one bulk messaging platform for modern marketers. Manage leads, track campaigns, and automate
+            your workflow with beautiful analytics.
         </p>
         <div class="flex flex-col md:flex-row items-center justify-center gap-4">
-            <a href="/signup" class="w-full md:w-auto px-10 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-lg transition-all shadow-xl shadow-blue-600/30">Start Growing Free</a>
-            <a href="#pricing" class="w-full md:w-auto px-10 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold transition-all">View Pricing</a>
+            <a href="/signup"
+                class="w-full md:w-auto px-10 py-5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-lg transition-all shadow-xl shadow-blue-600/30">Start
+                Growing Free</a>
+            <a href="#pricing"
+                class="w-full md:w-auto px-10 py-5 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold transition-all">View
+                Pricing</a>
         </div>
     </section>
 
@@ -59,25 +90,43 @@
     <section id="features" class="container mx-auto px-6 py-24 border-t border-white/5">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div class="glass-card p-10 rounded-[32px] hover:translate-y-[-8px] transition-all">
-                <div class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 border border-blue-500/20 shadow-lg shadow-blue-400/10">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                <div
+                    class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-400 mb-8 border border-blue-500/20 shadow-lg shadow-blue-400/10">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Lead Management</h3>
-                <p class="text-gray-400 leading-relaxed">Import contacts from Excel or CSV and organize them into targeted categories for precise outreach.</p>
+                <p class="text-gray-400 leading-relaxed">Import contacts from Excel or CSV and organize them into
+                    targeted categories for precise outreach.</p>
             </div>
             <div class="glass-card p-10 rounded-[32px] hover:translate-y-[-8px] transition-all">
-                <div class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 border border-purple-500/20 shadow-lg shadow-purple-400/10">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                <div
+                    class="w-14 h-14 bg-purple-500/10 rounded-2xl flex items-center justify-center text-purple-400 mb-8 border border-purple-500/20 shadow-lg shadow-purple-400/10">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
+                        </path>
+                    </svg>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Live Analytics</h3>
-                <p class="text-gray-400 leading-relaxed">Gain deep insights with real-time delivery tracking, success rates, and downloadable performance reports.</p>
+                <p class="text-gray-400 leading-relaxed">Gain deep insights with real-time delivery tracking, success
+                    rates, and downloadable performance reports.</p>
             </div>
             <div class="glass-card p-10 rounded-[32px] hover:translate-y-[-8px] transition-all">
-                <div class="w-14 h-14 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-400 mb-8 border border-green-500/20 shadow-lg shadow-green-400/10">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div
+                    class="w-14 h-14 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-400 mb-8 border border-green-500/20 shadow-lg shadow-green-400/10">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
+                    </svg>
                 </div>
                 <h3 class="text-2xl font-bold mb-4">Credit System</h3>
-                <p class="text-gray-400 leading-relaxed">Flexible pay-as-you-grow credit system. No monthly subscriptions, just pure value for your business.</p>
+                <p class="text-gray-400 leading-relaxed">Flexible pay-as-you-grow credit system. No monthly
+                    subscriptions, just pure value for your business.</p>
             </div>
         </div>
     </section>
@@ -92,39 +141,95 @@
             <!-- Starter -->
             <div class="glass-card p-8 rounded-[40px] border border-white/10 relative group">
                 <h4 class="text-lg font-bold text-gray-400 mb-4">Starter Pack</h4>
-                <div class="text-5xl font-black mb-6">1,000 <span class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
+                <div class="text-5xl font-black mb-6">1,000 <span
+                        class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
                 <div class="text-2xl font-bold mb-8">$10.00</div>
                 <ul class="space-y-4 mb-10 text-sm text-gray-400">
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> 1,000 Marketing Messages</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Essential Analytics</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> CSV/Excel Import</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> 1,000 Marketing Messages</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> Essential Analytics</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> CSV/Excel Import</li>
                 </ul>
-                <a href="/signup" class="block text-center py-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all font-bold">Buy Starter</a>
+                <a href="/signup"
+                    class="block text-center py-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all font-bold">Buy
+                    Starter</a>
             </div>
             <!-- Professional -->
             <div class="glass-card p-10 rounded-[40px] border-2 border-blue-500/50 relative group bg-blue-500/[0.02]">
-                <div class="absolute top-0 right-10 -translate-y-1/2 px-4 py-1.5 bg-blue-600 text-xs font-black uppercase tracking-widest rounded-full">Best Seller</div>
+                <div
+                    class="absolute top-0 right-10 -translate-y-1/2 px-4 py-1.5 bg-blue-600 text-xs font-black uppercase tracking-widest rounded-full">
+                    Best Seller</div>
                 <h4 class="text-lg font-bold text-blue-400 mb-4">Pro Marketer</h4>
-                <div class="text-5xl font-black mb-6">6,000 <span class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
+                <div class="text-5xl font-black mb-6">6,000 <span
+                        class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
                 <div class="text-2xl font-bold mb-8">$50.00</div>
                 <ul class="space-y-4 mb-10 text-sm text-gray-300">
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> 6,000 Marketing Messages</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Full PDF Reporting</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Priority Queueing</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> 6,000 Marketing Messages</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> Full PDF Reporting</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> Priority Queueing</li>
                 </ul>
-                <a href="/signup" class="block text-center py-5 rounded-3xl bg-blue-600 hover:bg-blue-500 transition-all font-black text-lg shadow-xl shadow-blue-600/30">Select Pro</a>
+                <a href="/signup"
+                    class="block text-center py-5 rounded-3xl bg-blue-600 hover:bg-blue-500 transition-all font-black text-lg shadow-xl shadow-blue-600/30">Select
+                    Pro</a>
             </div>
             <!-- Enterprise -->
             <div class="glass-card p-8 rounded-[40px] border border-white/10 relative group">
                 <h4 class="text-lg font-bold text-gray-400 mb-4">Growth Pack</h4>
-                <div class="text-5xl font-black mb-6">15,000 <span class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
+                <div class="text-5xl font-black mb-6">15,000 <span
+                        class="text-sm font-medium text-gray-500 uppercase">Credits</span></div>
                 <div class="text-2xl font-bold mb-8">$100.00</div>
                 <ul class="space-y-4 mb-10 text-sm text-gray-400">
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> 15,000 Messages</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Dedicated Support</li>
-                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg> Custom API Integration</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> 15,000 Messages</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> Dedicated Support</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="currentColor"
+                            viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                clip-rule="evenodd"></path>
+                        </svg> Custom API Integration</li>
                 </ul>
-                <a href="/signup" class="block text-center py-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all font-bold">Get Scale</a>
+                <a href="/signup"
+                    class="block text-center py-4 rounded-2xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all font-bold">Get
+                    Scale</a>
             </div>
         </div>
     </section>
@@ -133,12 +238,14 @@
     <footer class="container mx-auto px-6 py-20 border-t border-white/5 text-center">
         <div class="mb-10 text-gray-500 text-sm">© 2026 CBMS Pro. Designed for high performance.</div>
         <div class="flex justify-center gap-6">
-            <a href="#" class="text-gray-400 hover:text-white">Terms</a>
-            <a href="#" class="text-gray-400 hover:text-white">Privacy</a>
+            <a href="/terms" class="text-gray-400 hover:text-white">Terms</a>
+            <a href="/privacy" class="text-gray-400 hover:text-white">Privacy</a>
             <a href="#" class="text-gray-400 hover:text-white">Docs</a>
         </div>
     </footer>
 
     {% include 'support_widget.html' %}
+    <script src="/static/support_bot.js"></script>
 </body>
+
 </html>

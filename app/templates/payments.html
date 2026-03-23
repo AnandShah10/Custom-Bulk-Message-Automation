@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payments & Credits | CBMS Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-link {
+            @apply text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg text-sm font-medium;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
+    <!-- Ambient Background -->
+    <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
+        <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <a href="/dashboard" class="flex items-center gap-2 group">
+                    <div class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+                </a>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="/dashboard" class="text-gray-400 hover:text-white transition-colors text-sm font-medium">Dashboard</a>
+                <a href="/leads" class="text-gray-400 hover:text-white transition-colors text-sm font-medium">Leads</a>
+                <a href="/history" class="text-gray-400 hover:text-white transition-colors text-sm font-medium">History</a>
+                <a href="/payments" class="text-white bg-white/10 px-3 py-1.5 rounded-lg text-sm font-medium">Payments</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto py-12 px-4 space-y-12">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div>
+                <h1 class="text-4xl font-bold mb-2">Payments & Credits</h1>
+                <p class="text-gray-400">Manage your balance and view transaction history.</p>
+            </div>
+            <div class="glass-panel px-8 py-6 rounded-3xl border border-blue-500/20 shadow-xl bg-blue-600/5">
+                <p class="text-blue-400 text-xs font-bold uppercase tracking-widest mb-1">Available Credits</p>
+                <h2 id="currentBalance" class="text-4xl font-black text-white">{{ user.credits or 0 }}</h2>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Pricing / Top Up -->
+            <div class="lg:col-span-1 space-y-6">
+                <h3 class="font-bold text-xl px-2">Top Up Balance</h3>
+                <div class="space-y-4">
+                    <div class="glass-panel p-6 rounded-2xl border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group" onclick="topUp(500)">
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-blue-600/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded">STARTER</span>
+                            <span class="text-2xl font-bold text-white">$9.99</span>
+                        </div>
+                        <h4 class="text-white font-bold text-lg mb-1">500 Credits</h4>
+                        <p class="text-xs text-gray-500 mb-6">Perfect for small campaigns</p>
+                        <button class="w-full py-2.5 rounded-xl bg-white/5 border border-white/10 text-white text-sm font-bold group-hover:bg-blue-600 group-hover:border-blue-600 transition-all">Purchase Now</button>
+                    </div>
+
+                    <div class="glass-panel p-6 rounded-2xl border border-blue-500/30 bg-blue-600/5 relative overflow-hidden cursor-pointer group" onclick="topUp(2000)">
+                         <div class="absolute top-0 right-0 bg-blue-600 text-[10px] font-bold px-3 py-1 rounded-bl-xl">POPULAR</div>
+                        <div class="flex justify-between items-center mb-4">
+                            <span class="bg-blue-600/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded">GROWTH</span>
+                            <span class="text-2xl font-bold text-white">$29.99</span>
+                        </div>
+                        <h4 class="text-white font-bold text-lg mb-1">2,000 Credits</h4>
+                        <p class="text-xs text-gray-500 mb-6">Best for growing businesses</p>
+                        <button class="w-full py-2.5 rounded-xl bg-blue-600 text-white text-sm font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">Purchase Now</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction History -->
+            <div class="lg:col-span-2 space-y-6">
+                <h3 class="font-bold text-xl px-2">Transaction History</h3>
+                <div class="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
+                    <div id="transactionList" class="divide-y divide-white/5">
+                        <!-- Transactions injected here -->
+                    </div>
+                    <!-- Pagination -->
+                    <div class="p-6 bg-white/5 flex items-center justify-between border-t border-white/10">
+                        <div class="text-xs text-gray-500">
+                            Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button id="prevBtn" onclick="changePage(-1)" class="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                            </button>
+                            <button id="nextBtn" onclick="changePage(1)" class="p-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 transition-all">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentPage = 1;
+
+        async function loadCredits(page = 1) {
+            currentPage = page;
+            try {
+                const response = await fetch(`/campaigns/credits/history?page=${page}&size=10`);
+                const data = await response.json();
+                
+                renderTransactions(data.items);
+                document.getElementById('currentPage').textContent = data.page;
+                document.getElementById('totalPages').textContent = data.pages || 1;
+                document.getElementById('prevBtn').disabled = data.page <= 1;
+                document.getElementById('nextBtn').disabled = data.page >= data.pages;
+            } catch (err) { console.error("Load Credits Error:", err); }
+        }
+
+        function renderTransactions(items) {
+            const list = document.getElementById('transactionList');
+            if (items.length === 0) {
+                list.innerHTML = '<div class="p-12 text-center text-gray-500 italic">No transaction activity found.</div>';
+                return;
+            }
+            list.innerHTML = items.map(i => `
+                <div class="flex items-center justify-between p-6 hover:bg-white/[0.02] transition-colors">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl ${i.amount > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'} flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${i.amount > 0 ? 'M12 4v16m8-8H4' : 'M20 12H4'}"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-sm font-bold text-white">${i.description || i.type}</div>
+                            <div class="text-[10px] text-gray-500 uppercase tracking-wider mt-1">${new Date(i.created_at).toLocaleString()}</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-lg font-black ${i.amount > 0 ? 'text-green-400' : 'text-red-400'}">${i.amount > 0 ? '+' : ''}${i.amount}</div>
+                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">${i.type}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function topUp(amount) {
+            if (!confirm(`Confirm top-up of ${amount} credits?`)) return;
+            try {
+                const response = await fetch('/campaigns/credits/topup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount })
+                });
+                const data = await response.json();
+                if (data.status === 'success') {
+                    document.getElementById('currentBalance').textContent = data.new_balance;
+                    loadCredits(1);
+                    alert(`Successfully added ${amount} credits!`);
+                }
+            } catch (err) { alert("Top-up failed. Please try again."); }
+        }
+
+        function changePage(offset) {
+            loadCredits(currentPage + offset);
+        }
+
+        loadCredits();
+    </script>
+</body>
+</html>

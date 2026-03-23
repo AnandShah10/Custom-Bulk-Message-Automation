@@ -160,14 +160,19 @@
                 </a>
             </div>
             <div class="flex items-center gap-4">
-                <div class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-500/30 flex items-center gap-3">
+                <div
+                    class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-500/30 flex items-center gap-3">
                     <div class="flex items-center gap-2">
                         <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                            </path>
                         </svg>
                         <span>Credits: <span id="navCredits">{{ user.credits or 0 }}</span></span>
                     </div>
-                    <button onclick="document.getElementById('pricingModal').classList.remove('hidden')" class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] hover:bg-blue-500 transition-all font-black shadow-lg shadow-blue-600/20">TOP UP</button>
+                    <button onclick="document.getElementById('pricingModal').classList.remove('hidden')"
+                        class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] hover:bg-blue-500 transition-all font-black shadow-lg shadow-blue-600/20">TOP
+                        UP</button>
                 </div>
 
                 {% if user.role == 'admin' %}
@@ -200,6 +205,9 @@
                             Leads</a>
                         <a href="/history"
                             class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Campaign
+                            History</a>
+                        <a href="/payments"
+                            class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors border-t border-white/5">Payment
                             History</a>
                         <a href="/profile"
                             class="block px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">Security
@@ -269,14 +277,26 @@
 
                 <!-- Recipient Source Toggle -->
                 <div class="input-group">
-                    <label class="block text-sm font-medium text-gray-300 mb-4 tracking-wide uppercase text-xs">Recipients Source</label>
+                    <label
+                        class="block text-sm font-medium text-gray-300 mb-4 tracking-wide uppercase text-xs">Recipients
+                        Source</label>
                     <div class="grid grid-cols-2 gap-4 p-1.5 bg-white/5 rounded-2xl border border-white/10">
-                        <button type="button" id="sourceExcel" class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <button type="button" id="sourceExcel"
+                            class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm bg-blue-600 text-white shadow-lg shadow-blue-500/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
                             Direct Upload
                         </button>
-                        <button type="button" id="sourceLeads" class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm text-gray-400 hover:bg-white/5 hover:text-gray-200">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                        <button type="button" id="sourceLeads"
+                            class="flex items-center justify-center gap-2 py-3 rounded-xl transition-all font-medium text-sm text-gray-400 hover:bg-white/5 hover:text-gray-200">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                                </path>
+                            </svg>
                             Saved Leads
                         </button>
                     </div>
@@ -335,34 +355,44 @@
 
                 <!-- Saved Leads Selection (Hidden by default) -->
                 <div id="leadsSelectionArea" class="input-group hidden animate-in fade-in zoom-in duration-300">
-                    <label class="block text-sm font-medium text-gray-300 mb-2">Select Lead Category <span class="text-red-400">*</span></label>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Select Lead Category <span
+                            class="text-red-400">*</span></label>
                     <div class="relative">
-                        <select name="lead_category" id="leadCategorySelect" class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
+                        <select name="lead_category" id="leadCategorySelect"
+                            class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none">
                             <option value="all" class="bg-[#1e293b]">All Leads</option>
                             <option value="General" class="bg-[#1e293b]">General</option>
                         </select>
                         <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"></path>
+                            </svg>
                         </div>
                     </div>
-                    <p class="mt-2 text-xs text-gray-500 italic" id="leadStatsDisplay">0 leads available in this category.</p>
+                    <p class="mt-2 text-xs text-gray-500 italic" id="leadStatsDisplay">0 leads available in this
+                        category.</p>
                 </div>
 
                 <!-- ===== TEXT MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="text">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="text">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">📝</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Text Message</h4>
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Message Content <span class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡 Supports {Name}</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Message Content <span
+                                class="text-xs text-blue-400 font-medium bg-blue-500/10 px-2 py-1 rounded ml-2">💡
+                                Supports {Name}</span></label>
                         <textarea name="text_message" rows="4" placeholder="Hello {Name}, how are you today?"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== IMAGE MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="image">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="image">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">🖼️</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Image Message</h4>
@@ -374,14 +404,16 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="image_caption" rows="2" placeholder="Look at this amazing image, {Name}!"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== VIDEO MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="video">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="video">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">🎥</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Video Message</h4>
@@ -393,14 +425,16 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="video_caption" rows="2" placeholder="Watch this new video!"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== AUDIO MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="audio">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="audio">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">🎵</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Audio Message</h4>
@@ -412,14 +446,16 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="audio_text" rows="2" placeholder="Listen to this audio!"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== DOCUMENT MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="document">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="document">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">📄</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Document Message</h4>
@@ -431,38 +467,44 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Document Name <span class="text-xs text-gray-500">(with extension)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Document Name <span
+                                class="text-xs text-gray-500">(with extension)</span></label>
                         <input type="text" name="document_name" placeholder="Invoice.pdf"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="document_caption" rows="2" placeholder="Attached is your requested document."
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== STICKER MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="sticker">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="sticker">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">✨</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Sticker Message</h4>
                         <span class="ml-auto text-xs text-gray-500 font-normal">Max 50MB</span>
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL <span class="text-xs text-gray-500">(.webp or .gif)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Sticker URL <span
+                                class="text-xs text-gray-500">(.webp or .gif)</span></label>
                         <input type="url" name="sticker_url" placeholder="https://example.com/sticker.webp"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Text <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Text <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="sticker_text" rows="2" placeholder="Check out this sticker!"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== LOCATION MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="location">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="location">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">📍</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Location Message</h4>
@@ -485,19 +527,22 @@
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Address <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Address <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <input type="text" name="location_address" placeholder="e.g. 123 Main St"
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50">
                     </div>
                     <div class="input-group">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span class="text-xs text-gray-500">(optional)</span></label>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Caption / Note <span
+                                class="text-xs text-gray-500">(optional)</span></label>
                         <textarea name="location_caption" rows="2" placeholder="Here is our headquarters."
                             class="custom-input w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"></textarea>
                     </div>
                 </div>
 
                 <!-- ===== CONTACT MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="contact">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="contact">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">👤</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Contact Card</h4>
@@ -517,7 +562,8 @@
                 </div>
 
                 <!-- ===== POLL MESSAGE BLOCK ===== -->
-                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4" data-shows="poll">
+                <div class="dynamic-field hidden bg-white/[0.03] border border-white/10 rounded-2xl p-5 space-y-4"
+                    data-shows="poll">
                     <div class="flex items-center gap-2 border-b border-white/10 pb-3 mb-2">
                         <span class="text-lg">📊</span>
                         <h4 class="text-sm font-semibold text-white uppercase tracking-wider">Live Poll</h4>
@@ -529,10 +575,14 @@
                     </div>
                     <div class="input-group">
                         <div class="flex items-center justify-between mb-3">
-                            <label class="text-sm font-medium text-gray-300">Options <span class="text-xs text-gray-500">(max 12)</span></label>
+                            <label class="text-sm font-medium text-gray-300">Options <span
+                                    class="text-xs text-gray-500">(max 12)</span></label>
                             <button type="button" id="addPollOption"
                                 class="flex items-center gap-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/30 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                        d="M12 4v16m8-8H4" />
+                                </svg>
                                 Add Option
                             </button>
                         </div>
@@ -543,7 +593,8 @@
                     <div class="flex items-center gap-3 bg-white/5 p-4 rounded-xl border border-white/10">
                         <input type="checkbox" name="poll_multi_select" id="pollMultiSelect"
                             class="w-5 h-5 rounded border-white/20 bg-black/20 text-blue-500 focus:ring-blue-500/50">
-                        <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow Multiple Selections</label>
+                        <label for="pollMultiSelect" class="text-sm font-medium text-gray-300 cursor-pointer">Allow
+                            Multiple Selections</label>
                     </div>
                 </div>
 
@@ -714,13 +765,13 @@
             try {
                 const response = await fetch('/leads/');
                 const leads = await response.json();
-                
+
                 // Get unique categories
                 const categories = ['all', ...new Set(leads.map(l => l.category).filter(c => c))];
-                
+
                 // Update dropdown
                 const currentVal = leadCategorySelect.value;
-                leadCategorySelect.innerHTML = categories.map(c => 
+                leadCategorySelect.innerHTML = categories.map(c =>
                     `<option value="${c}" ${c === currentVal ? 'selected' : ''} class="bg-[#1e293b]">${c === 'all' ? 'All Leads' : c}</option>`
                 ).join('');
 
@@ -935,7 +986,7 @@
                     const lAddr = locAddress.value.trim() || '';
                     const curLat = latitude ? latitude.value : '0';
                     const curLng = longitude ? longitude.value : '0';
-                    
+
                     contentHTML = `
                         <div class="relative bg-[#1c2a33] rounded-lg border border-white/10 overflow-hidden shadow-inner" style="height: 180px; width: 100%;">
                             <iframe 
@@ -1078,36 +1129,49 @@
     </script>
     {% include "support_widget.html" %}
     <script src="/static/support_bot.js"></script>
+    <div id="toast-container"></div>
     </div>
 
     <!-- Pricing Modal -->
     <div id="pricingModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentNode.classList.add('hidden')"></div>
-        <div class="glass-panel w-full max-w-4xl rounded-[40px] p-10 border border-white/10 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh]">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="this.parentNode.classList.add('hidden')">
+        </div>
+        <div
+            class="glass-panel w-full max-w-4xl rounded-[40px] p-10 border border-white/10 shadow-2xl relative z-10 animate-in fade-in zoom-in duration-300 overflow-y-auto max-h-[90vh]">
             <div class="text-center mb-10">
                 <h2 class="text-3xl font-black mb-2">Refill Your Credits</h2>
                 <p class="text-gray-400">Choose a pack to continue your marketing campaigns.</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Packs -->
-                <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-blue-500/50 transition-all group">
+                <div
+                    class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-blue-500/50 transition-all group">
                     <h4 class="text-gray-400 font-bold mb-2">Starter</h4>
                     <div class="text-4xl font-black mb-4">1,000</div>
                     <div class="text-xl font-bold mb-6">$10.00</div>
-                    <button onclick="topUpCredits(1000)" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-blue-600 group-hover:border-blue-600 transition-all font-bold">Buy Now</button>
+                    <button onclick="topUpCredits(1000)"
+                        class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-blue-600 group-hover:border-blue-600 transition-all font-bold">Buy
+                        Now</button>
                 </div>
                 <div class="bg-blue-600/10 border border-blue-500/50 p-6 rounded-3xl text-center relative group">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">Best Value</div>
+                    <div
+                        class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-[10px] font-black px-3 py-1 rounded-full uppercase">
+                        Best Value</div>
                     <h4 class="text-blue-400 font-bold mb-2">Pro</h4>
                     <div class="text-4xl font-black mb-4">6,000</div>
                     <div class="text-xl font-bold mb-6">$50.00</div>
-                    <button onclick="topUpCredits(6000)" class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition-all font-bold shadow-lg shadow-blue-600/20">Buy Now</button>
+                    <button onclick="topUpCredits(6000)"
+                        class="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 transition-all font-bold shadow-lg shadow-blue-600/20">Buy
+                        Now</button>
                 </div>
-                <div class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-purple-500/50 transition-all group">
+                <div
+                    class="bg-white/5 border border-white/10 p-6 rounded-3xl text-center hover:border-purple-500/50 transition-all group">
                     <h4 class="text-gray-400 font-bold mb-2">Growth</h4>
                     <div class="text-4xl font-black mb-4">15,000</div>
                     <div class="text-xl font-bold mb-6">$100.00</div>
-                    <button onclick="topUpCredits(15000)" class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-purple-600 group-hover:border-purple-600 transition-all font-bold">Buy Now</button>
+                    <button onclick="topUpCredits(15000)"
+                        class="w-full py-3 rounded-xl bg-white/5 border border-white/10 group-hover:bg-purple-600 group-hover:border-purple-600 transition-all font-bold">Buy
+                        Now</button>
                 </div>
             </div>
         </div>
@@ -1117,14 +1181,14 @@
         async function topUpCredits(amount) {
             const confirmPurchase = confirm(`Are you sure you want to purchase ${amount} credits? (Mock Transaction)`);
             if (!confirmPurchase) return;
-            
+
             try {
                 const response = await fetch('/campaigns/credits/topup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: amount })
                 });
-                
+
                 const res = await response.json();
                 if (res.status === 'success') {
                     showToast('Credits Added', `Successfully added ${amount} credits to your account.`, 'success');

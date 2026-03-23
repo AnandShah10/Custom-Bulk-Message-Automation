@@ -11,8 +11,23 @@ from app.auth import get_current_active_user_or_401
 router = APIRouter(prefix="/leads", tags=["leads"])
 
 @router.get("/")
-async def get_leads(db: Session = Depends(get_db), user: User = Depends(get_current_active_user_or_401)):
-    return db.query(Lead).filter(Lead.user_id == user.id).all()
+async def get_leads(
+    page: int = 1,
+    size: int = 10,
+    db: Session = Depends(get_db), 
+    user: User = Depends(get_current_active_user_or_401)
+):
+    query = db.query(Lead).filter(Lead.user_id == user.id)
+    total = query.count()
+    items = query.order_by(Lead.created_at.desc()).offset((page - 1) * size).limit(size).all()
+    
+    return {
+        "items": items,
+        "total": total,
+        "page": page,
+        "size": size,
+        "pages": (total + size - 1) // size
+    }
 
 @router.post("/add")
 async def add_lead(

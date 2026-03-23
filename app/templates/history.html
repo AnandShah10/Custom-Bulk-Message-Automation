@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,24 +10,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body class="bg-gray-900 text-white min-h-screen relative overflow-x-hidden font-inter">
     <!-- Ambient Background -->
     <div class="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 bg-[#0f172a]">
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/10 rounded-full blur-[120px]"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/10 rounded-full blur-[120px]">
+        </div>
     </div>
 
     <nav class="glass-nav border-b border-white/10 sticky top-0 z-50">
         <div class="container mx-auto px-6 py-4 flex items-center justify-between">
             <a href="/dashboard" class="flex items-center gap-2 group">
-                <div class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                <div
+                    class="bg-blue-600 p-2 rounded-lg group-hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
                 </div>
-                <span class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS Pro</span>
+                <span
+                    class="font-bold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">CBMS
+                    Pro</span>
             </a>
             <div class="flex items-center gap-4 text-sm text-gray-400">
                 <a href="/dashboard" class="hover:text-white transition-colors">Dashboard</a>
                 <a href="/leads" class="hover:text-white transition-colors">Leads</a>
+                <a href="/payments" class="hover:text-white transition-colors">Payments</a>
             </div>
         </div>
     </nav>
@@ -48,7 +58,8 @@
                 <div class="flex items-end gap-2">
                     <h2 id="statSuccessRate" class="text-3xl font-bold">0%</h2>
                     <div class="w-24 h-2 bg-white/5 rounded-full overflow-hidden mb-2">
-                        <div id="successProgress" class="h-full bg-green-500 transition-all duration-1000" style="width: 0%"></div>
+                        <div id="successProgress" class="h-full bg-green-500 transition-all duration-1000"
+                            style="width: 0%"></div>
                     </div>
                 </div>
             </div>
@@ -60,14 +71,93 @@
             </div>
         </div>
 
-        <!-- Trend Chart -->
-        <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
-            <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                7-Day Messaging Trend
-            </h3>
-            <div class="h-64">
-                <canvas id="trendChart"></canvas>
+        <!-- Advanced Filters -->
+        <div
+            class="glass-panel p-6 rounded-3xl border border-white/10 shadow-xl bg-white/5 flex flex-wrap gap-6 items-end">
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Time Range</label>
+                <select id="timeRange" onchange="loadAdvancedStats()"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none min-w-[150px] text-white">
+                    <option value="daily" class="text-gray-900">Daily View</option>
+                    <option value="weekly" selected class="text-gray-900">Weekly View</option>
+                    <option value="monthly" class="text-gray-900">Monthly View</option>
+                    <option value="yearly" class="text-gray-900">Yearly View</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs font-bold text-gray-500 uppercase tracking-widest ml-1">Campaign Category</label>
+                <select id="campaignCategoryFilter" onchange="loadAdvancedStats()"
+                    class="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none min-w-[180px] text-white">
+                    <option value="All" class="text-gray-900">All Categories</option>
+                </select>
+            </div>
+            <button onclick="loadAdvancedStats()"
+                class="bg-blue-600 hover:bg-blue-500 px-6 py-2.5 rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20 text-sm">
+                Apply Filters
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Trend Chart -->
+            <div class="lg:col-span-2 glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
+                <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                    Performance Trend
+                </h3>
+                <div class="h-64">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Lead Distribution (Analysis) -->
+            <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
+                <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                    </svg>
+                    Lead Segments
+                </h3>
+                <div class="h-64">
+                    <canvas id="leadChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Category Success Rate -->
+            <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
+                <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2">
+                        </path>
+                    </svg>
+                    Success by Category
+                </h3>
+                <div class="h-64">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Conversion Funnel -->
+            <div class="glass-panel p-8 rounded-3xl border border-white/10 shadow-2xl bg-white/5">
+                <h3 class="font-bold text-xl mb-6 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                        </path>
+                    </svg>
+                    Lead Conversion
+                </h3>
+                <div class="h-64">
+                    <canvas id="conversionChart"></canvas>
+                </div>
             </div>
         </div>
 
@@ -75,6 +165,28 @@
         <div class="glass-panel rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-white/5">
             <div class="p-6 border-b border-white/10 flex justify-between items-center px-8">
                 <h3 class="font-bold text-xl">Campaign Logs</h3>
+                <div class="flex items-center gap-4">
+                    <div class="text-xs text-gray-500">
+                        Showing <span id="campaignPageStart">1</span>-<span id="campaignPageEnd">10</span> of <span
+                            id="campaignTotal">0</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="prevCampaignBtn" onclick="changeCampaignPage(-1)"
+                            class="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <button id="nextCampaignBtn" onclick="changeCampaignPage(1)"
+                            class="p-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
@@ -95,51 +207,165 @@
                 </table>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 pt-8">
-            <!-- Credit Transactions -->
-            <div class="space-y-6">
-                <h3 class="font-bold text-xl px-2">Credit Activity</h3>
-                <div id="creditHistoryList" class="space-y-3">
-                    <!-- Transactions here -->
-                </div>
-            </div>
-        </div>
     </main>
 
     <script>
+        let charts = {};
+
+        async function loadAdvancedStats() {
+            const range = document.getElementById('timeRange').value;
+            const category = document.getElementById('campaignCategoryFilter').value;
+
+            try {
+                const response = await fetch(`/analytics/advanced-stats?range=${range}&campaign_category=${category}`);
+                const data = await response.json();
+
+                updateTrendChart(data.trend);
+                updateLeadChart(data.lead_distribution);
+                updateCategoryChart(data.category_performance);
+                updateConversionChart(data.lead_conversion);
+
+                // Update specific category filter dropdown if needed
+                const filter = document.getElementById('campaignCategoryFilter');
+                if (filter.options.length <= 1) { // Only the first time
+                    data.available_campaign_categories.forEach(cat => {
+                        const opt = document.createElement('option');
+                        opt.value = cat;
+                        opt.textContent = cat;
+                        opt.className = "text-gray-900";
+                        filter.appendChild(opt);
+                    });
+                }
+            } catch (err) { console.error("Analytics Error:", err); }
+        }
+
+        function updateTrendChart(trendData) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (charts.trend) charts.trend.destroy();
+
+            charts.trend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trendData.map(d => d.label),
+                    datasets: [{
+                        label: 'Successful Deliveries',
+                        data: trendData.map(d => d.count),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointBackgroundColor: '#fff',
+                        pointRadius: 4
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.05)' } }, x: { grid: { display: false } } } }
+            });
+        }
+
+        function updateLeadChart(leadData) {
+            const ctx = document.getElementById('leadChart').getContext('2d');
+            if (charts.lead) charts.lead.destroy();
+
+            charts.lead = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: leadData.map(d => d.category),
+                    datasets: [{
+                        data: leadData.map(d => d.count),
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', boxWidth: 12 } } } }
+            });
+        }
+
+        function updateCategoryChart(catData) {
+            const ctx = document.getElementById('categoryChart').getContext('2d');
+            if (charts.category) charts.category.destroy();
+
+            charts.category = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: catData.map(d => d.category),
+                    datasets: [
+                        { label: 'Success', data: catData.map(d => d.success), backgroundColor: '#10b981' },
+                        { label: 'Failure', data: catData.map(d => d.failure), backgroundColor: '#ef4444' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } }
+            });
+        }
+
+        function updateConversionChart(convData) {
+            const ctx = document.getElementById('conversionChart').getContext('2d');
+            if (charts.conversion) charts.conversion.destroy();
+
+            charts.conversion = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: convData.map(d => d.status),
+                    datasets: [{
+                        data: convData.map(d => d.count),
+                        backgroundColor: ['#60a5fa', '#a78bfa', '#34d399', '#f87171'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', padding: 20 } } } }
+            });
+        }
+
         async function loadStats() {
             try {
                 const response = await fetch('/campaigns/stats');
                 const stats = await response.json();
-                
                 document.getElementById('statTotalSent').textContent = stats.total_sent.toLocaleString();
                 document.getElementById('statSuccessRate').textContent = stats.success_rate + '%';
                 document.getElementById('successProgress').style.width = stats.success_rate + '%';
                 document.getElementById('statCredits').textContent = stats.credits_remaining;
-
-                renderChart(stats.recent_trend);
             } catch (err) { console.error("Stats Error:", err); }
         }
 
-        async function loadCampaigns() {
+        let currentCampaignPage = 1;
+        let currentCreditPage = 1;
+
+        async function loadCampaigns(page = 1) {
+            currentCampaignPage = page;
             try {
-                const response = await fetch('/campaigns/');
+                const response = await fetch(`/campaigns/?page=${page}&size=10`);
                 const data = await response.json();
-                renderCampaigns(data);
+                renderCampaigns(data.items);
+                document.getElementById('campaignTotal').textContent = data.total;
+                document.getElementById('campaignPageStart').textContent = ((data.page - 1) * data.size) + 1;
+                document.getElementById('campaignPageEnd').textContent = Math.min(data.page * data.size, data.total);
+                document.getElementById('prevCampaignBtn').disabled = data.page <= 1;
+                document.getElementById('nextCampaignBtn').disabled = data.page >= data.pages;
             } catch (err) { console.error("Campaigns Error:", err); }
         }
 
-        async function loadCredits() {
+        async function loadCredits(page = 1) {
+            currentCreditPage = page;
             try {
-                const response = await fetch('/campaigns/credits/history');
-                const history = await response.json();
-                renderCreditHistory(history);
+                const response = await fetch(`/campaigns/credits/history?page=${page}&size=5`);
+                const data = await response.json();
+                renderCreditHistory(data.items);
+                document.getElementById('creditCurrentPage').textContent = data.page;
+                document.getElementById('creditTotalPages').textContent = data.pages || 1;
+                document.getElementById('prevCreditBtn').disabled = data.page <= 1;
+                document.getElementById('nextCreditBtn').disabled = data.page >= data.pages;
             } catch (err) { console.error("Credits Error:", err); }
         }
 
+        function changeCampaignPage(offset) { loadCampaigns(currentCampaignPage + offset); }
+        function changeCreditPage(offset) { loadCredits(currentCreditPage + offset); }
+
         function renderCampaigns(campaigns) {
             const body = document.getElementById('historyTableBody');
+            if (campaigns.length === 0) {
+                body.innerHTML = '<tr><td colspan="7" class="px-8 py-12 text-center text-gray-500 italic">No campaigns found</td></tr>';
+                return;
+            }
             body.innerHTML = campaigns.map(c => `
                 <tr class="hover:bg-white/[0.02] transition-colors">
                     <td class="px-8 py-5">
@@ -147,11 +373,10 @@
                         <div class="text-[10px] text-gray-500 font-mono mt-1">${c.public_id}</div>
                     </td>
                     <td class="px-8 py-5 text-center">
-                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${
-                            c.status === 'completed' ? 'bg-green-500/10 text-green-400' : 
-                            c.status === 'sending' ? 'bg-blue-500/10 text-blue-400 animate-pulse' : 
-                            'bg-orange-500/10 text-orange-400'
-                        }">${c.status}</span>
+                        <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${c.status === 'completed' ? 'bg-green-500/10 text-green-400' :
+                    c.status === 'sending' ? 'bg-blue-500/10 text-blue-400 animate-pulse' :
+                        'bg-orange-500/10 text-orange-400'
+                }">${c.status}</span>
                     </td>
                     <td class="px-8 py-5 text-center font-bold text-gray-300">${c.total_contacts}</td>
                     <td class="px-8 py-5 text-center text-green-400 font-bold">${c.success_count}</td>
@@ -169,6 +394,10 @@
 
         function renderCreditHistory(items) {
             const list = document.getElementById('creditHistoryList');
+            if (items.length === 0) {
+                list.innerHTML = '<div class="p-6 text-center text-gray-500 italic">No activity yet</div>';
+                return;
+            }
             list.innerHTML = items.map(i => `
                 <div class="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/10">
                     <div class="flex items-center gap-3">
@@ -185,59 +414,11 @@
             `).join('');
         }
 
-        function renderChart(trendData) {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: trendData.map(d => d.date),
-                    datasets: [{
-                        label: 'Successful Messages',
-                        data: trendData.map(d => d.count),
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointBackgroundColor: '#fff',
-                        pointBorderColor: '#3b82f6',
-                        pointRadius: 4,
-                        pointHoverRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: 'rgba(255, 255, 255, 0.05)' },
-                            ticks: { color: 'rgba(255, 255, 255, 0.4)' }
-                        },
-                        x: { 
-                            grid: { display: false },
-                            ticks: { color: 'rgba(255, 255, 255, 0.4)' }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#0f172a',
-                            titleColor: '#fff',
-                            bodyColor: '#cbd5e1',
-                            borderColor: 'rgba(255, 255, 255, 0.1)',
-                            borderWidth: 1,
-                            padding: 12,
-                            displayColors: false
-                        }
-                    }
-                }
-            });
-        }
-
         loadStats();
+        loadAdvancedStats();
         loadCampaigns();
         loadCredits();
     </script>
 </body>
+
 </html>

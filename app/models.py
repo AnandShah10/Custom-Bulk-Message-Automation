@@ -81,6 +81,7 @@ class Campaign(Base):
     public_id = Column(String(36), unique=True, index=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(Integer, ForeignKey("users.id"), index=True)
     name = Column(String)
+    category = Column(String, default="General")
     message_type = Column(String) # text, image, etc.
     status = Column(String, default="queued") # queued, sending, completed, failed
     total_contacts = Column(Integer, default=0)

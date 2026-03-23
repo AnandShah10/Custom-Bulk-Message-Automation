@@ -150,6 +150,7 @@
             <div class="flex items-center gap-4">
                 <div class="bg-blue-600/20 text-blue-400 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-500/30">Credits: {{ user.credits or 0 }}</div>
                 <a href="/dashboard" class="text-sm text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                <a href="/payments" class="text-sm text-gray-400 hover:text-white transition-colors border-l border-white/10 pl-4">Payments</a>
             </div>
         </div>
     </nav>
@@ -206,6 +207,16 @@
                 <h4 class="text-xl font-bold mb-2">No Leads Found</h4>
                 <p class="text-gray-400">Start by adding leads manually or importing a list.</p>
             </div>
+            <!-- Pagination for Leads -->
+            <div class="px-6 py-4 bg-white/5 border-t border-white/10 flex items-center justify-between">
+                <div class="text-sm text-gray-400">
+                    Showing <span id="leadsPageStart">0</span> - <span id="leadsPageEnd">0</span> of <span id="leadsTotal">0</span> leads
+                </div>
+                <div class="flex gap-2">
+                    <button id="prevLeadsBtn" onclick="changeLeadsPage(-1)" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm font-medium">Previous</button>
+                    <button id="nextLeadsBtn" onclick="changeLeadsPage(1)" class="px-4 py-2 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 disabled:opacity-30 disabled:cursor-not-allowed transition-all text-sm font-medium">Next</button>
+                </div>
+            </div>
         </div>
     </main>
 
@@ -257,14 +268,37 @@
     </div>
 
     <script>
-        async function loadLeads() {
+        let currentLeadsPage = 1;
+
+        async function loadLeads(page = 1) {
+            currentLeadsPage = page;
+            const container = document.getElementById('leadsTableBody');
+            const loading = document.getElementById('loadingState');
+            const empty = document.getElementById('emptyState');
+            
+            loading.classList.remove('hidden');
+            
             try {
-                const response = await fetch('/leads/');
-                const leads = await response.json();
-                renderLeads(leads);
+                const response = await fetch(`/leads/?page=${page}&size=10`);
+                const data = await response.json();
+                
+                renderLeads(data.items);
+                
+                // Update pagination info
+                document.getElementById('leadsTotal').textContent = data.total;
+                document.getElementById('leadsPageStart').textContent = data.total === 0 ? 0 : ((data.page - 1) * data.size) + 1;
+                document.getElementById('leadsPageEnd').textContent = Math.min(data.page * data.size, data.total);
+                
+                document.getElementById('prevLeadsBtn').disabled = data.page <= 1;
+                document.getElementById('nextLeadsBtn').disabled = data.page >= data.pages;
             } catch (err) {
                 console.error("Failed to load leads:", err);
+                loading.classList.add('hidden');
             }
+        }
+
+        function changeLeadsPage(offset) {
+            loadLeads(currentLeadsPage + offset);
         }
 
         function renderLeads(leads) {

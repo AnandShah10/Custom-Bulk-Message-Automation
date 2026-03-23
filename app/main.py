@@ -13,7 +13,7 @@ from app.queue_manager import SEND_QUEUE
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.responses import HTMLResponse
 from app.database import engine, Base
-from app.routers import auth, mfa, oauth, users, admin, sessions, support, leads, campaigns
+from app.routers import auth, mfa, oauth, users, admin, sessions, support, leads, campaigns, analytics
 from app.models import User, Lead, Campaign, CampaignLog, CreditTransaction, SystemLog
 from app.auth import get_current_user, get_current_active_user_or_401
 from sqlalchemy.orm import Session
@@ -87,6 +87,7 @@ app.include_router(sessions.router)
 app.include_router(support.router)
 app.include_router(leads.router)
 app.include_router(campaigns.router)
+app.include_router(analytics.router)
 
 @app.on_event("startup")
 async def on_startup():
@@ -121,6 +122,13 @@ async def on_startup():
         if "credits" not in columns:
             db.execute(text("ALTER TABLE users ADD COLUMN credits INTEGER DEFAULT 0"))
             print("Added credits column")
+
+        # Check campaigns table
+        result = db.execute(text("PRAGMA table_info(campaigns)"))
+        columns = [row[1] for row in result]
+        if "category" not in columns:
+            db.execute(text("ALTER TABLE campaigns ADD COLUMN category VARCHAR DEFAULT 'General'"))
+            print("Added category column to campaigns")
 
         # Create new tables if they don't exist
         # Base.metadata.create_all is already called at the top, 
@@ -165,6 +173,13 @@ async def manual_migrate():
         if "whatsapp_session_status" not in columns:
             db.execute(text("ALTER TABLE users ADD COLUMN whatsapp_session_status VARCHAR DEFAULT 'disconnected'"))
             msg += "Added whatsapp_session_status. "
+        
+        # Campaigns table
+        result = db.execute(text("PRAGMA table_info(campaigns)"))
+        camp_cols = [row[1] for row in result]
+        if "category" not in camp_cols:
+            db.execute(text("ALTER TABLE campaigns ADD COLUMN category VARCHAR DEFAULT 'General'"))
+            msg += "Added campaigns.category. "
         db.commit()
         return {"status": "success", "message": msg}
     except Exception as e:
@@ -253,6 +268,11 @@ async def history_page(request: Request, user = Depends(get_current_active_user_
     """The Campaign History and Analytics page."""
     return templates.TemplateResponse("history.html", {"request": request, "user": user})
 
+@app.get("/payments", response_class=HTMLResponse)
+async def payments_page(request: Request, user = Depends(get_current_active_user_or_401)):
+    """The Payment and Credit History page."""
+    return templates.TemplateResponse("payments.html", {"request": request, "user": user})
+
 @app.get("/campaigns/{campaign_id}/report/pdf")
 async def download_campaign_report(
     campaign_id: int, 
@@ -330,9 +350,13 @@ async def handle_form(
     excel_file: UploadFile = File(None), # Optional if using saved leads
     source_type: str = Form("excel"),
     lead_category: str = Form("all"),
+    campaign_category: str = Form("General"),
     db: Session = Depends(get_db)
 ):
     try:
+        # Re-fetch user from the current db session to ensure credit updates persist
+        user = db.query(User).filter(User.id == user.id).first()
+        
         # Priority: Form API Key > User's Session API Key > Master/Default API Key
         final_api_key = api_key.strip() if api_key and api_key.strip() else None
         
@@ -401,6 +425,7 @@ async def handle_form(
         campaign = Campaign(
             user_id=user.id,
             name=campaign_name,
+            category=campaign_category,
             message_type=message_type,
             total_contacts=contacts_reached,
             status="queued"
