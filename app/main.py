@@ -248,8 +248,8 @@ async def terms_page(request: Request):
 async def profile_page(request: Request, user = Depends(get_current_active_user_or_401)):
     return templates.TemplateResponse("profile.html", {"request": request, "user": user})
 
-@app.get("/dashboard", response_class=HTMLResponse)
-async def dashboard_page(request: Request, user = Depends(get_current_active_user_or_401)):
+@app.get("/broadcast", response_class=HTMLResponse)
+async def broadcast_page(request: Request, user = Depends(get_current_active_user_or_401)):
     """The protected main broadcasting page."""
     return templates.TemplateResponse("index.html", {"request": request, "user": user})
 
@@ -263,9 +263,9 @@ async def leads_page(request: Request, user = Depends(get_current_active_user_or
     """The Lead management page."""
     return templates.TemplateResponse("leads.html", {"request": request, "user": user})
 
-@app.get("/history", response_class=HTMLResponse)
-async def history_page(request: Request, user = Depends(get_current_active_user_or_401)):
-    """The Campaign History and Analytics page."""
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request, user = Depends(get_current_active_user_or_401)):
+    """The main Analytics Dashboard (replacing old history page)."""
     return templates.TemplateResponse("history.html", {"request": request, "user": user})
 
 @app.get("/payments", response_class=HTMLResponse)
