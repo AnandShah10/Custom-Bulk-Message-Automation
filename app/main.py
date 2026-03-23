@@ -434,17 +434,20 @@ async def handle_form(
         db.flush() 
 
         # Deduct Credits
-        if user.role != "admin":
-            user.credits -= total_cost
-            transaction = CreditTransaction(
-                user_id=user.id,
-                amount=-total_cost,
-                type="usage",
-                description=f"Campaign: {campaign.name} (Cost: {total_cost} credits)"
-            )
-            db.add(transaction)
+        old_credits = user.credits
+        user.credits -= total_cost
+        
+        transaction = CreditTransaction(
+            user_id=user.id,
+            amount=-total_cost,
+            type="usage",
+            description=f"Campaign: {campaign.name} (Cost: {total_cost} credits)"
+        )
+        db.add(transaction)
         
         db.commit()
+        db.refresh(user)
+        logging.info(f"CREDIT_DEDUCTION: User {user.username} (Role: {user.role}) deducted {total_cost} credits. Old: {old_credits}, New: {user.credits}")
 
         count = 0
         for item in recipients:
